@@ -37,10 +37,10 @@ export function Header({ userEmail }: { userEmail?: string }) {
   }
 
   return (
-    <header className="flex h-14 shrink-0 items-center justify-between border-b border-zinc-200 bg-white px-4">
+    <header className="flex h-14 shrink-0 items-center justify-between border-b border-border bg-card px-4">
       {/* Left: Logo text (visible on mobile or as breadcrumb area) */}
       <div className="flex items-center gap-3">
-        <span className="text-sm font-semibold text-zinc-900">LeadPilot</span>
+        <span className="text-sm font-semibold text-foreground">LeadPilot</span>
       </div>
 
       {/* Center: Client selector */}
@@ -55,11 +55,11 @@ export function Header({ userEmail }: { userEmail?: string }) {
           >
             <SelectTrigger
               className={cn(
-                "h-9 min-w-[200px] gap-2 border-zinc-200 bg-zinc-50 text-sm font-medium",
-                "hover:bg-zinc-100 transition-colors"
+                "h-9 min-w-[200px] gap-2 border-border bg-secondary text-sm font-medium",
+                "hover:bg-accent transition-colors"
               )}
             >
-              <ChevronsUpDown className="size-3.5 shrink-0 text-zinc-400" />
+              <ChevronsUpDown className="size-3.5 shrink-0 text-muted-foreground" />
               <SelectValue placeholder="Seleccionar cliente">
                 {activeClient?.name ?? "Seleccionar cliente"}
               </SelectValue>
@@ -73,7 +73,7 @@ export function Header({ userEmail }: { userEmail?: string }) {
             </SelectContent>
           </Select>
         ) : (
-          <span className="text-sm text-zinc-500">Sin clientes</span>
+          <span className="text-sm text-muted-foreground">Sin clientes</span>
         )}
       </div>
 
@@ -81,24 +81,24 @@ export function Header({ userEmail }: { userEmail?: string }) {
       <div className="flex items-center">
         <DropdownMenu>
           <DropdownMenuTrigger
-            className="flex items-center gap-2 rounded-lg px-2 py-1.5 transition-colors hover:bg-zinc-100 outline-none"
+            className="flex items-center gap-2 rounded-lg px-2 py-1.5 transition-colors hover:bg-accent outline-none"
           >
             <Avatar size="sm">
-              <AvatarFallback className="bg-zinc-900 text-[10px] text-white">
+              <AvatarFallback className="bg-primary text-[10px] text-primary-foreground">
                 {initials}
               </AvatarFallback>
             </Avatar>
             {userEmail && (
-              <span className="hidden text-sm text-zinc-600 sm:inline">
+              <span className="hidden text-sm text-muted-foreground sm:inline">
                 {userEmail}
               </span>
             )}
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" sideOffset={8}>
             <div className="px-2 py-1.5">
-              <p className="text-sm font-medium text-zinc-900">Mi cuenta</p>
+              <p className="text-sm font-medium text-foreground">Mi cuenta</p>
               {userEmail && (
-                <p className="text-xs text-zinc-500">{userEmail}</p>
+                <p className="text-xs text-muted-foreground">{userEmail}</p>
               )}
             </div>
             <DropdownMenuSeparator />

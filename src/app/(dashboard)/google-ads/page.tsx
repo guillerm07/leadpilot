@@ -67,12 +67,17 @@ export default async function GoogleAdsPage({
 
   if (!account) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-8">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold tracking-tight text-zinc-900">
-            Google Ads
-          </h1>
+          <div className="space-y-1">
+            <h1 className="text-2xl font-bold tracking-tight">
+              Google Ads
+            </h1>
+            <p className="text-muted-foreground">
+              Gestiona y optimiza tus campañas
+            </p>
+          </div>
           <PeriodSelector />
         </div>
 
@@ -87,24 +92,22 @@ export default async function GoogleAdsPage({
         </div>
 
         {/* Empty state message inside campaigns area */}
-        <div className="space-y-3">
-          <h2 className="text-lg font-semibold text-zinc-900">Campañas</h2>
-          <div className="flex h-[300px] items-center justify-center rounded-lg border border-dashed">
-            <div className="text-center space-y-3">
-              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                <TrendingUp className="h-6 w-6 text-primary" />
-              </div>
-              <h2 className="text-lg font-semibold text-zinc-900">
-                Conecta tu cuenta de Google Ads para empezar
-              </h2>
-              <p className="text-sm text-zinc-500 max-w-md">
-                Vincula tu cuenta de Google Ads para ver métricas, gestionar campañas
-                y optimizar tu rendimiento publicitario.
-              </p>
-              <Link href="/settings">
-                <Button>Configurar conexión</Button>
-              </Link>
+        <div className="space-y-4">
+          <h2 className="text-lg font-semibold">Campañas</h2>
+          <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-muted-foreground/25 py-16">
+            <div className="rounded-full bg-primary/10 p-4 mb-4">
+              <TrendingUp className="h-8 w-8 text-primary" />
             </div>
+            <h3 className="text-base font-semibold">
+              Conecta tu cuenta de Google Ads para empezar
+            </h3>
+            <p className="mt-1 text-sm text-muted-foreground max-w-sm text-center">
+              Vincula tu cuenta de Google Ads para ver métricas, gestionar campañas
+              y optimizar tu rendimiento publicitario.
+            </p>
+            <Link href="/settings" className="mt-4">
+              <Button>Configurar conexión</Button>
+            </Link>
           </div>
         </div>
       </div>
@@ -189,14 +192,14 @@ export default async function GoogleAdsPage({
   });
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-zinc-900">
+        <div className="space-y-1">
+          <h1 className="text-2xl font-bold tracking-tight">
             Google Ads
           </h1>
-          <p className="text-sm text-zinc-500">
+          <p className="text-muted-foreground">
             {account.name || account.googleCustomerId}
             {account.syncedAt && (
               <> &middot; Sincronizado: {new Date(account.syncedAt).toLocaleDateString("es-ES")}</>
@@ -251,8 +254,8 @@ export default async function GoogleAdsPage({
       </div>
 
       {/* Campaigns Table */}
-      <div className="space-y-3">
-        <h2 className="text-lg font-semibold text-zinc-900">Campañas</h2>
+      <div className="space-y-4">
+        <h2 className="text-lg font-semibold">Campañas</h2>
         <CampaignsTable campaigns={campaignRows} />
       </div>
     </div>

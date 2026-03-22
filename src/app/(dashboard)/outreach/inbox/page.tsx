@@ -172,13 +172,13 @@ export default async function InboxPage({
   );
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold text-zinc-900">
+    <div className="space-y-8">
+      <div className="space-y-1">
+        <h1 className="text-2xl font-bold tracking-tight">
           Bandeja de entrada
         </h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Respuestas de leads a tus secuencias de contacto
+        <p className="text-muted-foreground">
+          Respuestas de tus leads
         </p>
       </div>
 

@@ -50,13 +50,13 @@ export default async function SequencesPage() {
   const sequences = await getSequencesByClient(clientId);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold text-zinc-900">Secuencias</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Gestiona tus secuencias de contacto automatizadas
+        <div className="space-y-1">
+          <h1 className="text-2xl font-bold tracking-tight">Secuencias</h1>
+          <p className="text-muted-foreground">
+            Automatiza el contacto con tus leads
           </p>
         </div>
         <Link href="/outreach/sequences/new">
@@ -69,28 +69,24 @@ export default async function SequencesPage() {
 
       {/* Content */}
       {sequences.length === 0 ? (
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center py-16">
-            <div className="rounded-full bg-zinc-100 p-4">
-              <Inbox className="size-8 text-zinc-400" />
-            </div>
-            <h3 className="mt-4 text-base font-medium text-zinc-900">
-              No hay secuencias
-            </h3>
-            <p className="mt-1 text-sm text-muted-foreground text-center max-w-sm">
-              Crea tu primera secuencia de contacto para automatizar el envio
-              de mensajes a tus leads.
-            </p>
-            <Link href="/outreach/sequences/new" className="mt-4">
-              <Button>
-                <Plus className="size-4" data-icon="inline-start" />
-                Nueva secuencia
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
+        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-muted-foreground/25 py-16">
+          <div className="rounded-full bg-primary/10 p-4 mb-4">
+            <Inbox className="h-8 w-8 text-primary" />
+          </div>
+          <h3 className="text-base font-semibold">No hay secuencias</h3>
+          <p className="mt-1 text-sm text-muted-foreground text-center max-w-sm">
+            Crea tu primera secuencia de contacto para automatizar el envio
+            de mensajes a tus leads.
+          </p>
+          <Link href="/outreach/sequences/new" className="mt-4">
+            <Button>
+              <Plus className="size-4" data-icon="inline-start" />
+              Nueva secuencia
+            </Button>
+          </Link>
+        </div>
       ) : (
-        <Card>
+        <Card className="shadow-sm">
           <Table>
             <TableHeader>
               <TableRow>

@@ -43,11 +43,11 @@ export default async function DashboardPage() {
   if (!activeClientId) {
     return (
       <div className="flex h-full items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-lg font-semibold text-zinc-900">
+        <div className="text-center space-y-2">
+          <h2 className="text-lg font-semibold text-foreground">
             Selecciona un cliente para ver el dashboard
           </h2>
-          <p className="mt-1 text-sm text-zinc-500">
+          <p className="text-sm text-muted-foreground">
             Usa el selector de clientes en la barra lateral para empezar.
           </p>
         </div>
@@ -156,15 +156,12 @@ export default async function DashboardPage() {
   }));
 
   return (
-    <div className="space-y-2">
-      <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
-      <DashboardContent
-        metrics={metrics}
-        activityData={activityData}
-        recentReplies={recentReplies}
-        suggestedActions={suggestedActions}
-      />
-    </div>
+    <DashboardContent
+      metrics={metrics}
+      activityData={activityData}
+      recentReplies={recentReplies}
+      suggestedActions={suggestedActions}
+    />
   );
 }
 

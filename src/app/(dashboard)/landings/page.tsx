@@ -32,7 +32,12 @@ export default async function LandingsPage({
   const statusFilter = params.status || undefined;
   const experimentFilter = params.experiment || undefined;
 
-  const allLandings = await getLandingsByClient(activeClientId);
+  let allLandings: Awaited<ReturnType<typeof getLandingsByClient>> = [];
+  try {
+    allLandings = await getLandingsByClient(activeClientId);
+  } catch {
+    // landing_pages table may not exist yet
+  }
 
   // Apply filters
   let landings = allLandings;
@@ -48,18 +53,14 @@ export default async function LandingsPage({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-zinc-900">
+        <div className="space-y-1">
+          <h1 className="text-2xl font-bold tracking-tight">
             Landing Pages
           </h1>
-          <p className="text-sm text-zinc-500">
-            {allLandings.length}{" "}
-            {allLandings.length === 1
-              ? "landing page"
-              : "landing pages"}{" "}
-            en total
+          <p className="text-muted-foreground">
+            Crea y optimiza tus páginas de aterrizaje
           </p>
         </div>
       </div>

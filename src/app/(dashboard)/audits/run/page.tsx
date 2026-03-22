@@ -184,21 +184,21 @@ export default function AuditRunPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight text-zinc-900">
-          Lanzar Auditoría
+      <div className="space-y-1">
+        <h1 className="text-2xl font-bold tracking-tight">
+          Lanzar auditoría
         </h1>
-        <p className="text-sm text-zinc-500">
-          Audita sitios web de tus leads para encontrar problemas y oportunidades
+        <p className="text-muted-foreground">
+          Audita webs de tus leads
         </p>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Configuration */}
         <div className="lg:col-span-2 space-y-4">
-          <Card>
+          <Card className="shadow-sm hover:shadow-md transition-shadow">
             <CardHeader>
               <CardTitle className="text-base">Configuración</CardTitle>
             </CardHeader>
@@ -299,7 +299,7 @@ export default function AuditRunPage() {
 
         {/* Sidebar: estimate + launch */}
         <div className="space-y-4">
-          <Card>
+          <Card className="shadow-sm hover:shadow-md transition-shadow">
             <CardHeader>
               <CardTitle className="text-base">Estimación</CardTitle>
             </CardHeader>
@@ -341,7 +341,7 @@ export default function AuditRunPage() {
 
           {/* Recent jobs */}
           {jobs.length > 0 && (
-            <Card>
+            <Card className="shadow-sm hover:shadow-md transition-shadow">
               <CardHeader>
                 <CardTitle className="text-base">Cola de trabajos</CardTitle>
               </CardHeader>

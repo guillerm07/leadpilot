@@ -96,8 +96,8 @@ function NavLink({
         "group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200",
         nested && !collapsed && "pl-10",
         isActive
-          ? "bg-zinc-800 text-white"
-          : "text-zinc-400 hover:bg-zinc-800/50 hover:text-zinc-200"
+          ? "bg-sidebar-primary text-sidebar-primary-foreground"
+          : "text-sidebar-foreground/60 hover:bg-sidebar-accent hover:text-sidebar-foreground"
       )}
     >
       <Icon className={cn("shrink-0", collapsed ? "size-5" : "size-4")} />
@@ -137,8 +137,8 @@ function OutreachSection({ collapsed }: { collapsed: boolean }) {
               className={cn(
                 "group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200",
                 isActive
-                  ? "bg-zinc-800 text-white"
-                  : "text-zinc-400 hover:bg-zinc-800/50 hover:text-zinc-200"
+                  ? "bg-sidebar-primary text-sidebar-primary-foreground"
+                  : "text-sidebar-foreground/60 hover:bg-sidebar-accent hover:text-sidebar-foreground"
               )}
             >
               <Icon className="size-5 shrink-0" />
@@ -159,16 +159,16 @@ function OutreachSection({ collapsed }: { collapsed: boolean }) {
         className={cn(
           "flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200",
           isActive
-            ? "text-white"
-            : "text-zinc-400 hover:bg-zinc-800/50 hover:text-zinc-200"
+            ? "text-sidebar-foreground"
+            : "text-sidebar-foreground/60 hover:bg-sidebar-accent hover:text-sidebar-foreground"
         )}
       >
         <Icon className="size-4 shrink-0" />
         <span className="flex-1 truncate text-left">{outreachGroup.label}</span>
         {expanded ? (
-          <ChevronDown className="size-4 shrink-0 text-zinc-500" />
+          <ChevronDown className="size-4 shrink-0 text-sidebar-foreground/40" />
         ) : (
-          <ChevronRight className="size-4 shrink-0 text-zinc-500" />
+          <ChevronRight className="size-4 shrink-0 text-sidebar-foreground/40" />
         )}
       </button>
       <div
@@ -194,17 +194,17 @@ export function Sidebar() {
     <TooltipProvider>
       <aside
         className={cn(
-          "flex h-full flex-col bg-zinc-900 transition-all duration-300 ease-in-out",
+          "flex h-full flex-col bg-sidebar transition-all duration-300 ease-in-out",
           collapsed ? "w-16" : "w-60"
         )}
       >
         {/* Logo */}
-        <div className="flex h-14 items-center justify-between border-b border-zinc-800 px-3">
+        <div className="flex h-14 items-center justify-between border-b border-sidebar-border px-3">
           <Link
             href="/dashboard"
-            className="flex items-center gap-2 text-white"
+            className="flex items-center gap-2 text-sidebar-foreground"
           >
-            <div className="flex size-8 items-center justify-center rounded-lg bg-white font-bold text-zinc-900 text-sm">
+            <div className="flex size-8 items-center justify-center rounded-lg bg-sidebar-primary font-bold text-sidebar-primary-foreground text-sm">
               LP
             </div>
             {!collapsed && (
@@ -216,7 +216,7 @@ export function Sidebar() {
           <button
             onClick={() => setCollapsed(!collapsed)}
             className={cn(
-              "flex size-6 items-center justify-center rounded-md text-zinc-400 transition-colors hover:bg-zinc-800 hover:text-zinc-200",
+              "flex size-6 items-center justify-center rounded-md text-sidebar-foreground/60 transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground",
               collapsed && "mx-auto"
             )}
           >
@@ -251,7 +251,7 @@ export function Sidebar() {
           </div>
 
           {/* Separator */}
-          <div className="my-3 h-px bg-zinc-800" />
+          <div className="my-3 h-px bg-sidebar-border" />
 
           {/* Bottom items: Clientes + Configuracion */}
           <div className="space-y-0.5">
@@ -262,14 +262,14 @@ export function Sidebar() {
         </nav>
 
         {/* Footer */}
-        <div className="border-t border-zinc-800 p-2 space-y-1">
+        <div className="border-t border-sidebar-border p-2 space-y-1">
           {collapsed ? (
             <Tooltip>
               <TooltipTrigger
                 render={
                   <button
                     onClick={() => signOut({ callbackUrl: "/login" })}
-                    className="flex w-full items-center justify-center rounded-lg px-3 py-2 text-zinc-400 transition-colors hover:bg-zinc-800/50 hover:text-zinc-200"
+                    className="flex w-full items-center justify-center rounded-lg px-3 py-2 text-sidebar-foreground/60 transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground"
                   >
                     <LogOut className="size-5 shrink-0" />
                   </button>
@@ -283,12 +283,12 @@ export function Sidebar() {
             <>
               <button
                 onClick={() => signOut({ callbackUrl: "/login" })}
-                className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-zinc-400 transition-colors hover:bg-zinc-800/50 hover:text-zinc-200"
+                className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-sidebar-foreground/60 transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground"
               >
                 <LogOut className="size-4 shrink-0" />
                 <span className="truncate">Cerrar sesión</span>
               </button>
-              <p className="px-3 py-1 text-[10px] text-zinc-600">
+              <p className="px-3 py-1 text-[10px] text-sidebar-foreground/30">
                 LeadPilot v0.1
               </p>
             </>

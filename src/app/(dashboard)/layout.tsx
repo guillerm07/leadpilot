@@ -45,14 +45,14 @@ export default async function DashboardLayout({
           <Sidebar />
           <div className="flex flex-1 flex-col overflow-hidden">
             <Header userEmail={user.email ?? undefined} />
-            <main className="flex-1 overflow-y-auto bg-zinc-50 p-6">
+            <main className="flex-1 overflow-y-auto bg-gradient-subtle p-6">
               {clientList.length === 0 ? (
                 <div className="flex h-full items-center justify-center">
                   <div className="text-center">
-                    <h2 className="text-lg font-semibold text-zinc-900">
+                    <h2 className="text-lg font-semibold text-foreground">
                       No hay clientes
                     </h2>
-                    <p className="mt-1 text-sm text-zinc-500">
+                    <p className="mt-1 text-sm text-muted-foreground">
                       Crea tu primer cliente para empezar a gestionar leads.
                     </p>
                   </div>

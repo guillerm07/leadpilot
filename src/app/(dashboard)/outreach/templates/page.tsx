@@ -43,13 +43,13 @@ export default async function TemplatesPage({
       : allTemplates;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold text-zinc-900">Plantillas</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Plantillas de mensajes con instrucciones para generación IA
+        <div className="space-y-1">
+          <h1 className="text-2xl font-bold tracking-tight">Plantillas</h1>
+          <p className="text-muted-foreground">
+            Crea plantillas para tus mensajes
           </p>
         </div>
         <Link href="/outreach/templates/new">
@@ -95,29 +95,25 @@ export default async function TemplatesPage({
 
       {/* Content */}
       {templates.length === 0 ? (
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center py-16">
-            <div className="rounded-full bg-zinc-100 p-4">
-              <FileText className="size-8 text-zinc-400" />
-            </div>
-            <h3 className="mt-4 text-base font-medium text-zinc-900">
-              No hay plantillas
-            </h3>
-            <p className="mt-1 text-sm text-muted-foreground text-center max-w-sm">
-              {channelFilter && channelFilter !== "todos"
-                ? `No hay plantillas de ${channelFilter === "email" ? "email" : "WhatsApp"}. Crea una nueva plantilla.`
-                : "Crea tu primera plantilla de mensaje para usar en secuencias de contacto."}
-            </p>
-            <Link href="/outreach/templates/new" className="mt-4">
-              <Button>
-                <Plus className="size-4" data-icon="inline-start" />
-                Nueva plantilla
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
+        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-muted-foreground/25 py-16">
+          <div className="rounded-full bg-primary/10 p-4 mb-4">
+            <FileText className="h-8 w-8 text-primary" />
+          </div>
+          <h3 className="text-base font-semibold">No hay plantillas</h3>
+          <p className="mt-1 text-sm text-muted-foreground text-center max-w-sm">
+            {channelFilter && channelFilter !== "todos"
+              ? `No hay plantillas de ${channelFilter === "email" ? "email" : "WhatsApp"}. Crea una nueva plantilla.`
+              : "Crea tu primera plantilla de mensaje para usar en secuencias de contacto."}
+          </p>
+          <Link href="/outreach/templates/new" className="mt-4">
+            <Button>
+              <Plus className="size-4" data-icon="inline-start" />
+              Nueva plantilla
+            </Button>
+          </Link>
+        </div>
       ) : (
-        <Card>
+        <Card className="shadow-sm">
           <Table>
             <TableHeader>
               <TableRow>

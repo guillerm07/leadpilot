@@ -54,22 +54,27 @@ export default async function LeadsPage({
   ]);
 
   // Fetch scores for current page's leads
-  const leadIds = leads.map((l) => l.id);
-  const scoreRows = await getLeadScoresForLeads(leadIds);
-  const scores = scoreRows.map((s) => ({
-    leadId: s.leadId,
-    score: s.score,
-  }));
+  let scores: { leadId: string; score: number }[] = [];
+  try {
+    const leadIds = leads.map((l) => l.id);
+    const scoreRows = await getLeadScoresForLeads(leadIds);
+    scores = scoreRows.map((s) => ({
+      leadId: s.leadId,
+      score: s.score,
+    }));
+  } catch {
+    // lead_scores table may not exist yet
+  }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-zinc-900">
+        <div className="space-y-1">
+          <h1 className="text-2xl font-bold tracking-tight">
             Leads
           </h1>
-          <p className="text-sm text-zinc-500">
-            {totalCount} {totalCount === 1 ? "lead" : "leads"} en total
+          <p className="text-muted-foreground">
+            Gestiona tus leads y prospectos
           </p>
         </div>
         <ViewToggle currentView={view} />

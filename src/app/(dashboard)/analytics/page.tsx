@@ -176,9 +176,12 @@ export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold tracking-tight">Analytics</h1>
+        <div className="space-y-1">
+          <h1 className="text-2xl font-bold tracking-tight">Analytics</h1>
+          <p className="text-muted-foreground">Rendimiento unificado de todos los canales</p>
+        </div>
         <div className="flex items-center gap-3">
           <PeriodSelector currentPeriod={currentPeriod} />
           <Link href="/analytics/report">

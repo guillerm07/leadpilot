@@ -72,20 +72,25 @@ export default async function AuditProfilesPage() {
     redirect("/");
   }
 
-  const profiles = await db
-    .select({
-      id: auditProfiles.id,
-      name: auditProfiles.name,
-      checksConfig: auditProfiles.checksConfig,
-      categoryWeights: auditProfiles.categoryWeights,
-      createdAt: auditProfiles.createdAt,
-      jobsCount: count(auditJobs.id),
-    })
-    .from(auditProfiles)
-    .leftJoin(auditJobs, eq(auditProfiles.id, auditJobs.profileId))
-    .where(eq(auditProfiles.clientId, clientId))
-    .groupBy(auditProfiles.id)
-    .orderBy(auditProfiles.createdAt);
+  let profiles: { id: string; name: string; checksConfig: unknown; categoryWeights: unknown; createdAt: Date; jobsCount: number }[] = [];
+  try {
+    profiles = await db
+      .select({
+        id: auditProfiles.id,
+        name: auditProfiles.name,
+        checksConfig: auditProfiles.checksConfig,
+        categoryWeights: auditProfiles.categoryWeights,
+        createdAt: auditProfiles.createdAt,
+        jobsCount: count(auditJobs.id),
+      })
+      .from(auditProfiles)
+      .leftJoin(auditJobs, eq(auditProfiles.id, auditJobs.profileId))
+      .where(eq(auditProfiles.clientId, clientId))
+      .groupBy(auditProfiles.id)
+      .orderBy(auditProfiles.createdAt);
+  } catch {
+    // audit tables may not exist yet
+  }
 
   function getEnabledChecksCount(config: unknown): number {
     const c = config as ChecksConfig;
@@ -97,15 +102,15 @@ export default async function AuditProfilesPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-zinc-900">
-            Perfiles de Auditoría
+        <div className="space-y-1">
+          <h1 className="text-2xl font-bold tracking-tight">
+            Auditorías
           </h1>
-          <p className="text-sm text-zinc-500">
-            Configura que aspectos auditar en los sitios web de tus leads
+          <p className="text-muted-foreground">
+            Configura perfiles de auditoría web
           </p>
         </div>
         <Link href="/audits/profiles/new">
@@ -117,8 +122,8 @@ export default async function AuditProfilesPage() {
       </div>
 
       {/* Preset templates */}
-      <div>
-        <h2 className="text-sm font-medium text-zinc-500 mb-3">
+      <div className="space-y-4">
+        <h2 className="text-sm font-medium text-muted-foreground">
           Plantillas predefinidas
         </h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -129,7 +134,7 @@ export default async function AuditProfilesPage() {
                 key={preset.id}
                 href={`/audits/profiles/new?template=${preset.id}`}
               >
-                <Card className="h-full transition-shadow hover:shadow-md cursor-pointer">
+                <Card className="h-full shadow-sm hover:shadow-md transition-shadow cursor-pointer">
                   <CardContent className="p-4 space-y-3">
                     <div
                       className={`inline-flex rounded-lg p-2 ${preset.color}`}
@@ -166,25 +171,21 @@ export default async function AuditProfilesPage() {
       </div>
 
       {/* Custom profiles */}
-      <div>
-        <h2 className="text-sm font-medium text-zinc-500 mb-3">
+      <div className="space-y-4">
+        <h2 className="text-sm font-medium text-muted-foreground">
           Tus perfiles
         </h2>
         {profiles.length === 0 ? (
-          <Card>
-            <CardContent className="flex flex-col items-center justify-center py-12">
-              <div className="rounded-full bg-zinc-100 p-4">
-                <ClipboardCheck className="size-8 text-zinc-400" />
-              </div>
-              <h3 className="mt-4 text-base font-medium text-zinc-900">
-                No hay perfiles personalizados
-              </h3>
-              <p className="mt-1 max-w-sm text-center text-sm text-muted-foreground">
-                Crea un perfil personalizado o usa una de las plantillas
-                predefinidas.
-              </p>
-            </CardContent>
-          </Card>
+          <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-muted-foreground/25 py-16">
+            <div className="rounded-full bg-primary/10 p-4 mb-4">
+              <ClipboardCheck className="h-8 w-8 text-primary" />
+            </div>
+            <h3 className="text-base font-semibold">No hay perfiles personalizados</h3>
+            <p className="mt-1 max-w-sm text-center text-sm text-muted-foreground">
+              Crea un perfil personalizado o usa una de las plantillas
+              predefinidas.
+            </p>
+          </div>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {profiles.map((profile) => (
@@ -192,7 +193,7 @@ export default async function AuditProfilesPage() {
                 key={profile.id}
                 href={`/audits/profiles/${profile.id}`}
               >
-                <Card className="h-full transition-shadow hover:shadow-md cursor-pointer">
+                <Card className="h-full shadow-sm hover:shadow-md transition-shadow cursor-pointer">
                   <CardContent className="p-4 space-y-3">
                     <div className="flex items-center justify-between">
                       <h3 className="text-sm font-semibold text-zinc-900">

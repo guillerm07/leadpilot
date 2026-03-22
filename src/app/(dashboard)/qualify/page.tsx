@@ -56,16 +56,15 @@ export default async function QualifyPage() {
     .orderBy(qualificationForms.createdAt);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold text-zinc-900">
-            Formularios de cualificación
+        <div className="space-y-1">
+          <h1 className="text-2xl font-bold tracking-tight">
+            Formularios
           </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Crea formularios multi-paso para cualificar leads y agendar
-            reuniones
+          <p className="text-muted-foreground">
+            Cualifica a tus leads con formularios inteligentes
           </p>
         </div>
         <Link href="/qualify/new/edit">
@@ -78,28 +77,24 @@ export default async function QualifyPage() {
 
       {/* Content */}
       {forms.length === 0 ? (
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center py-16">
-            <div className="rounded-full bg-zinc-100 p-4">
-              <ClipboardList className="size-8 text-zinc-400" />
-            </div>
-            <h3 className="mt-4 text-base font-medium text-zinc-900">
-              No hay formularios
-            </h3>
-            <p className="mt-1 max-w-sm text-center text-sm text-muted-foreground">
-              Crea tu primer formulario de cualificación para filtrar leads y
-              agendar reuniones automáticamente con Cal.com.
-            </p>
-            <Link href="/qualify/new/edit" className="mt-4">
-              <Button>
-                <Plus className="size-4" data-icon="inline-start" />
-                Nuevo formulario
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
+        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-muted-foreground/25 py-16">
+          <div className="rounded-full bg-primary/10 p-4 mb-4">
+            <ClipboardList className="h-8 w-8 text-primary" />
+          </div>
+          <h3 className="text-base font-semibold">No hay formularios</h3>
+          <p className="mt-1 max-w-sm text-center text-sm text-muted-foreground">
+            Crea tu primer formulario de cualificación para filtrar leads y
+            agendar reuniones automáticamente con Cal.com.
+          </p>
+          <Link href="/qualify/new/edit" className="mt-4">
+            <Button>
+              <Plus className="size-4" data-icon="inline-start" />
+              Nuevo formulario
+            </Button>
+          </Link>
+        </div>
       ) : (
-        <Card>
+        <Card className="shadow-sm">
           <Table>
             <TableHeader>
               <TableRow>

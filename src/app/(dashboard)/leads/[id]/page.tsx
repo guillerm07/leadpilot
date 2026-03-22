@@ -28,7 +28,8 @@ export default async function LeadDetailPage({
     notFound();
   }
 
-  const leadScore = await getLeadScore(id);
+  let leadScore = null;
+  try { leadScore = await getLeadScore(id); } catch { /* table may not exist */ }
 
   const messages = lead.outreachMessages ?? [];
   const replies = messages.flatMap((m) =>

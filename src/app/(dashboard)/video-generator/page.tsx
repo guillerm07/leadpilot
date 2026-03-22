@@ -231,14 +231,14 @@ export default function VideoGeneratorPage() {
     : { avatar: 0.05, tts: 0.03, video: 0.5, total: 0.58 };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight text-zinc-900">
-          Generador de Video IA
+      <div className="space-y-1">
+        <h1 className="text-2xl font-bold tracking-tight">
+          Generador de Vídeo IA
         </h1>
-        <p className="text-sm text-zinc-500">
-          Crea videos con avatar parlante para tus campanas de marketing
+        <p className="text-muted-foreground">
+          Crea vídeos UGC para anuncios
         </p>
       </div>
 
@@ -281,7 +281,7 @@ export default function VideoGeneratorPage() {
 
       {/* Step 1: Research */}
       {currentStep === 1 && (
-        <Card>
+        <Card className="shadow-sm hover:shadow-md transition-shadow">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Search className="size-5" />
@@ -360,7 +360,7 @@ export default function VideoGeneratorPage() {
 
       {/* Step 2: Scripts */}
       {currentStep === 2 && (
-        <Card>
+        <Card className="shadow-sm hover:shadow-md transition-shadow">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Pencil className="size-5" />
@@ -449,7 +449,7 @@ export default function VideoGeneratorPage() {
       {/* Step 3: Avatar & Voice */}
       {currentStep === 3 && (
         <div className="grid gap-6 lg:grid-cols-2">
-          <Card>
+          <Card className="shadow-sm hover:shadow-md transition-shadow">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <ImageIcon className="size-5" />
@@ -521,7 +521,7 @@ export default function VideoGeneratorPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="shadow-sm hover:shadow-md transition-shadow">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Volume2 className="size-5" />
@@ -583,7 +583,7 @@ export default function VideoGeneratorPage() {
 
       {/* Step 4: Generate */}
       {currentStep === 4 && (
-        <Card>
+        <Card className="shadow-sm hover:shadow-md transition-shadow">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Play className="size-5" />

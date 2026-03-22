@@ -45,10 +45,10 @@ export default async function ClientsPage() {
     <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
       {/* Header */}
       <div className="mb-8 flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-semibold tracking-tight">Clientes</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Gestiona los clientes de tu agencia y sus configuraciones.
+        <div className="space-y-1">
+          <h1 className="text-2xl font-bold tracking-tight">Clientes</h1>
+          <p className="text-muted-foreground">
+            Gestiona los clientes de tu agencia
           </p>
         </div>
         <CreateClientDialog />
@@ -56,18 +56,18 @@ export default async function ClientsPage() {
 
       {/* Content */}
       {clients.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed py-16">
-          <div className="flex size-14 items-center justify-center rounded-full bg-muted">
-            <Building2 className="size-7 text-muted-foreground" />
+        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-muted-foreground/25 py-16">
+          <div className="rounded-full bg-primary/10 p-4 mb-4">
+            <Building2 className="h-8 w-8 text-primary" />
           </div>
-          <h2 className="mt-4 text-base font-medium">
+          <h3 className="text-base font-semibold">
             Añade tu primer cliente
-          </h2>
+          </h3>
           <p className="mt-1 max-w-sm text-center text-sm text-muted-foreground">
             Los clientes te permiten organizar leads, campañas e
             integraciones de forma independiente.
           </p>
-          <div className="mt-6">
+          <div className="mt-4">
             <CreateClientDialog />
           </div>
         </div>

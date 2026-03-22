@@ -107,7 +107,7 @@ export function ReportGeneratorContent({
   }, []);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-8">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -117,15 +117,20 @@ export function ReportGeneratorContent({
               Volver
             </Button>
           </Link>
-          <h1 className="text-2xl font-bold tracking-tight">
-            Generar informe
-          </h1>
+          <div className="space-y-1">
+            <h1 className="text-2xl font-bold tracking-tight">
+              Generar informe
+            </h1>
+            <p className="text-muted-foreground">
+              Crea informes para tus clientes
+            </p>
+          </div>
         </div>
         <PeriodSelector currentPeriod={currentPeriod} />
       </div>
 
       {/* Config */}
-      <Card>
+      <Card className="shadow-sm hover:shadow-md transition-shadow">
         <CardHeader>
           <CardTitle>Configuración del informe</CardTitle>
         </CardHeader>
