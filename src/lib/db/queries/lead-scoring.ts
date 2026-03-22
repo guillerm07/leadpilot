@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { leadScores, leads } from "@/lib/db/schema";
-import { eq, and, desc, sql } from "drizzle-orm";
+import { eq, desc, sql } from "drizzle-orm";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 

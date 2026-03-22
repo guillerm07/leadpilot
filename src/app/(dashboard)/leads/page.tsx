@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { getLeadsByClient, getLeadsCount } from "@/lib/db/queries/leads";
+import { getLeadScoresForLeads } from "@/lib/db/queries/lead-scoring";
 import { LeadsList } from "@/components/leads/leads-list";
 import { LeadsKanban } from "@/components/leads/leads-kanban";
 import { ViewToggle } from "@/components/leads/view-toggle";
@@ -52,6 +53,14 @@ export default async function LeadsPage({
     getLeadsCount(activeClientId, { status: isKanban ? undefined : status, search }),
   ]);
 
+  // Fetch scores for current page's leads
+  const leadIds = leads.map((l) => l.id);
+  const scoreRows = await getLeadScoresForLeads(leadIds);
+  const scores = scoreRows.map((s) => ({
+    leadId: s.leadId,
+    score: s.score,
+  }));
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -77,6 +86,7 @@ export default async function LeadsPage({
           currentStatus={status}
           currentSearch={search}
           clientId={activeClientId}
+          scores={scores}
         />
       )}
     </div>

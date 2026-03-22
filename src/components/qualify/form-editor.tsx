@@ -113,17 +113,21 @@ export function FormEditor({
 
   // Steps state
   const [localSteps, setLocalSteps] = useState<StepData[]>(
-    initialSteps.map((s) => ({
-      id: s.id,
-      formId: s.formId,
-      stepOrder: s.stepOrder,
-      questionText: s.questionText,
-      questionType: s.questionType as QuestionType,
-      options: s.options,
-      isRequired: s.isRequired,
-      qualificationRules: s.qualificationRules,
-      showIf: s.showIf ?? null,
-    }))
+    initialSteps.map((s) => {
+      // Extract showIf from qualificationRules if present
+      const rulesShowIf = (s.qualificationRules as Record<string, unknown> | null)?.showIf as ShowIfCondition | undefined;
+      return {
+        id: s.id,
+        formId: s.formId,
+        stepOrder: s.stepOrder,
+        questionText: s.questionText,
+        questionType: s.questionType as QuestionType,
+        options: s.options,
+        isRequired: s.isRequired,
+        qualificationRules: s.qualificationRules,
+        showIf: s.showIf ?? rulesShowIf ?? null,
+      };
+    })
   );
 
   const [showPreview, setShowPreview] = useState(false);

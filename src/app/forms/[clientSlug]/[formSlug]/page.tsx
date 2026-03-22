@@ -98,18 +98,56 @@ export default function PublicFormPage({
 
 // ─── Multi-Step Form ────────────────────────────────────────────────────────
 
+function evaluateShowIf(
+  condition: ShowIfCondition,
+  allSteps: FormStep[],
+  answers: Record<string, string>
+): boolean {
+  const targetStep = allSteps[condition.stepIndex];
+  if (!targetStep) return true;
+  const answer = answers[targetStep.id] ?? "";
+
+  switch (condition.operator) {
+    case "equals":
+      return answer === condition.value;
+    case "not_equals":
+      return answer !== condition.value;
+    case "contains":
+      return answer.toLowerCase().includes(condition.value.toLowerCase());
+    default:
+      return true;
+  }
+}
+
 function MultiStepForm({ config }: { config: FormConfig }) {
-  const [currentStep, setCurrentStep] = useState(0);
+  const [currentVisibleIndex, setCurrentVisibleIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [state, setState] = useState<SubmissionState>("answering");
   const [direction, setDirection] = useState<"forward" | "backward">("forward");
   const [errorMessage, setErrorMessage] = useState("");
 
-  const steps = config.steps;
-  const totalSteps = steps.length;
-  const step = steps[currentStep];
+  const allSteps = config.steps;
+
+  // Compute visible steps based on current answers and showIf conditions
+  const visibleSteps = allSteps.filter((s) => {
+    const showIf = s.qualificationRules?.showIf;
+    if (!showIf) return true;
+    return evaluateShowIf(showIf, allSteps, answers);
+  });
+
+  const totalSteps = visibleSteps.length;
+  const step = visibleSteps[currentVisibleIndex];
   const progress =
-    totalSteps > 0 ? ((currentStep + 1) / totalSteps) * 100 : 0;
+    totalSteps > 0
+      ? ((currentVisibleIndex + 1) / totalSteps) * 100
+      : 0;
+
+  // Clamp visible index when steps change due to conditional logic
+  useEffect(() => {
+    if (currentVisibleIndex >= totalSteps && totalSteps > 0) {
+      setCurrentVisibleIndex(totalSteps - 1);
+    }
+  }, [currentVisibleIndex, totalSteps]);
 
   // Read UTM params from URL
   const [utmParams, setUtmParams] = useState<Record<string, string>>({});
@@ -137,18 +175,18 @@ function MultiStepForm({ config }: { config: FormConfig }) {
   }
 
   function goNext() {
-    if (currentStep < totalSteps - 1) {
+    if (currentVisibleIndex < totalSteps - 1) {
       setDirection("forward");
-      setCurrentStep((prev) => prev + 1);
+      setCurrentVisibleIndex((prev) => prev + 1);
     } else {
       handleSubmit();
     }
   }
 
   function goBack() {
-    if (currentStep > 0) {
+    if (currentVisibleIndex > 0) {
       setDirection("backward");
-      setCurrentStep((prev) => prev - 1);
+      setCurrentVisibleIndex((prev) => prev - 1);
     }
   }
 
@@ -163,14 +201,14 @@ function MultiStepForm({ config }: { config: FormConfig }) {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentStep, answers, state]);
+  }, [currentVisibleIndex, answers, state]);
 
   // Qualification engine
   function evaluateQualification(): {
     qualified: boolean;
     reason: string | null;
   } {
-    for (const s of steps) {
+    for (const s of allSteps) {
       const rules = s.qualificationRules;
       if (!rules?.qualifyingValues || rules.qualifyingValues.length === 0) continue;
 
@@ -392,7 +430,7 @@ function MultiStepForm({ config }: { config: FormConfig }) {
       <div className="mb-8 space-y-2">
         <div className="flex items-center justify-between text-xs text-zinc-400">
           <span>
-            Paso {currentStep + 1} de {totalSteps}
+            Paso {currentVisibleIndex + 1} de {totalSteps}
           </span>
           <span>{Math.round(progress)}%</span>
         </div>
@@ -406,7 +444,7 @@ function MultiStepForm({ config }: { config: FormConfig }) {
 
       {/* Step content with transition */}
       <div
-        key={currentStep}
+        key={currentVisibleIndex}
         className={cn(
           "animate-in fade-in duration-300",
           direction === "forward" ? "slide-in-from-right-4" : "slide-in-from-left-4"
@@ -538,10 +576,10 @@ function MultiStepForm({ config }: { config: FormConfig }) {
       <div className="mt-10 flex items-center justify-between">
         <button
           onClick={goBack}
-          disabled={currentStep === 0}
+          disabled={currentVisibleIndex === 0}
           className={cn(
             "rounded-lg px-5 py-2.5 text-sm font-medium transition-colors",
-            currentStep === 0
+            currentVisibleIndex === 0
               ? "cursor-not-allowed text-zinc-300"
               : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
           )}
@@ -559,7 +597,7 @@ function MultiStepForm({ config }: { config: FormConfig }) {
               : "cursor-not-allowed bg-zinc-200 text-zinc-400"
           )}
         >
-          {currentStep === totalSteps - 1 ? "Enviar" : "Siguiente"}
+          {currentVisibleIndex === totalSteps - 1 ? "Enviar" : "Siguiente"}
         </button>
       </div>
 
