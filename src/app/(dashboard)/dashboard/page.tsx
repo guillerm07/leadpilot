@@ -36,11 +36,6 @@ export default async function DashboardPage() {
 
       if (firstClient) {
         activeClientId = firstClient.id;
-        // Set the cookie server-side so subsequent requests have it
-        cookieStore.set("active_client_id", activeClientId, {
-          path: "/",
-          maxAge: 31536000,
-        });
       }
     }
   }

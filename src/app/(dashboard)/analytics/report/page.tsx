@@ -87,10 +87,6 @@ export default async function ReportPage({ searchParams }: ReportPageProps) {
 
       if (firstClient) {
         activeClientId = firstClient.id;
-        cookieStore.set("active_client_id", activeClientId, {
-          path: "/",
-          maxAge: 31536000,
-        });
       }
     }
   }

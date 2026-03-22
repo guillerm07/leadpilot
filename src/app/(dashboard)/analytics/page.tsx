@@ -83,10 +83,6 @@ export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps
 
       if (firstClient) {
         activeClientId = firstClient.id;
-        cookieStore.set("active_client_id", activeClientId, {
-          path: "/",
-          maxAge: 31536000,
-        });
       }
     }
   }
