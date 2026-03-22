@@ -45,6 +45,19 @@ const STATUS_COLORS: Record<string, string> = {
   archived: "bg-amber-100 text-amber-700",
 };
 
+const STATUS_FILTER_LABELS: Record<string, string> = {
+  all: "Todos los estados",
+  draft: "Borrador",
+  deployed: "Desplegada",
+  archived: "Archivada",
+};
+
+const EXPERIMENT_FILTER_LABELS: Record<string, string> = {
+  all: "Todos",
+  with: "Con experimento activo",
+  without: "Sin experimento",
+};
+
 export function LandingsList({
   landings,
   clientId,
@@ -90,7 +103,9 @@ export function LandingsList({
           }
         >
           <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Estado" />
+            <SelectValue placeholder="Estado">
+              {STATUS_FILTER_LABELS[currentStatus ?? "all"] ?? "Todos los estados"}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Todos los estados</SelectItem>
@@ -107,7 +122,9 @@ export function LandingsList({
           }
         >
           <SelectTrigger className="w-[200px]">
-            <SelectValue placeholder="Experimento" />
+            <SelectValue placeholder="Experimento">
+              {EXPERIMENT_FILTER_LABELS[currentExperiment ?? "all"] ?? "Todos"}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Todos</SelectItem>

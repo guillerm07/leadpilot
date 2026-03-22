@@ -49,6 +49,12 @@ const QUESTION_TYPE_LABELS: Record<QuestionType, string> = {
   phone: "Teléfono",
 };
 
+type ShowIfCondition = {
+  stepIndex: number;
+  operator: "equals" | "not_equals" | "contains";
+  value: string;
+};
+
 type StepData = {
   id: string | null;
   formId: string | null;
@@ -58,6 +64,7 @@ type StepData = {
   options: string[] | null;
   isRequired: boolean;
   qualificationRules: Record<string, unknown> | null;
+  showIf: ShowIfCondition | null;
 };
 
 type FormData = {
@@ -81,6 +88,7 @@ type FormEditorProps = {
     options: string[] | null;
     isRequired: boolean;
     qualificationRules: Record<string, unknown> | null;
+    showIf?: ShowIfCondition | null;
   }>;
 };
 
@@ -114,25 +122,34 @@ export function FormEditor({
       options: s.options,
       isRequired: s.isRequired,
       qualificationRules: s.qualificationRules,
+      showIf: s.showIf ?? null,
     }))
   );
 
   const [showPreview, setShowPreview] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
 
-  // ─── Auto-slug from name ──────────────────────────────────────────────
+  // ─── Slug helpers ───────────────────────────────────────────────────
+
+  function slugify(value: string): string {
+    return value
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
+  }
 
   function handleNameChange(value: string) {
     setName(value);
-    if (!form) {
-      // Only auto-slug for new forms
-      setSlug(
-        value
-          .toLowerCase()
-          .replace(/[^a-z0-9]+/g, "-")
-          .replace(/(^-|-$)/g, "")
-      );
+    if (!form && !slugManuallyEdited) {
+      // Only auto-slug for new forms when the slug hasn't been manually edited
+      setSlug(slugify(value));
     }
+  }
+
+  function handleSlugChange(value: string) {
+    setSlugManuallyEdited(true);
+    setSlug(slugify(value));
   }
 
   // ─── Step management ──────────────────────────────────────────────────
@@ -149,6 +166,7 @@ export function FormEditor({
         options: null,
         isRequired: true,
         qualificationRules: null,
+        showIf: null,
       },
     ]);
   }
@@ -287,6 +305,13 @@ export function FormEditor({
 
         // Create or update steps
         for (const step of localSteps) {
+          // Merge showIf into qualificationRules for storage
+          const rules = {
+            ...(step.qualificationRules ?? {}),
+            ...(step.showIf ? { showIf: step.showIf } : {}),
+          };
+          const rulesOrNull = Object.keys(rules).length > 0 ? rules : null;
+
           if (step.id) {
             await updateStepAction({
               id: step.id,
@@ -294,7 +319,7 @@ export function FormEditor({
               questionType: step.questionType,
               options: step.options,
               isRequired: step.isRequired,
-              qualificationRules: step.qualificationRules,
+              qualificationRules: rulesOrNull,
               stepOrder: step.stepOrder,
             });
           } else {
@@ -304,7 +329,7 @@ export function FormEditor({
               questionType: step.questionType,
               options: step.options,
               isRequired: step.isRequired,
-              qualificationRules: step.qualificationRules,
+              qualificationRules: rulesOrNull,
               stepOrder: step.stepOrder,
             });
           }
@@ -458,7 +483,7 @@ export function FormEditor({
                 placeholder="cualificación-google-ads"
                 value={slug}
                 onChange={(e) =>
-                  setSlug((e.target as HTMLInputElement).value)
+                  handleSlugChange((e.target as HTMLInputElement).value)
                 }
               />
               {publicUrl && (
@@ -536,6 +561,7 @@ export function FormEditor({
                 step={step}
                 index={index}
                 totalSteps={localSteps.length}
+                allSteps={localSteps}
                 onUpdate={(updates) => updateStep(index, updates)}
                 onRemove={() => removeStep(index)}
                 onMoveUp={() => moveStep(index, "up")}
@@ -578,10 +604,17 @@ export function FormEditor({
 
 // ─── Step Card ────────────────────────────────────────────────────────────────
 
+const OPERATOR_LABELS: Record<ShowIfCondition["operator"], string> = {
+  equals: "es igual a",
+  not_equals: "no es igual a",
+  contains: "contiene",
+};
+
 function StepCard({
   step,
   index,
   totalSteps,
+  allSteps,
   onUpdate,
   onRemove,
   onMoveUp,
@@ -594,6 +627,7 @@ function StepCard({
   step: StepData;
   index: number;
   totalSteps: number;
+  allSteps: StepData[];
   onUpdate: (updates: Partial<StepData>) => void;
   onRemove: () => void;
   onMoveUp: () => void;
@@ -739,6 +773,115 @@ function StepCard({
                     );
                   })}
               </div>
+            </div>
+          )}
+
+          {/* Conditional display logic */}
+          {index > 0 && (
+            <div className="space-y-2 rounded-lg border border-dashed border-zinc-300 bg-white/50 p-3">
+              <div className="flex items-center justify-between">
+                <Label className="text-xs text-muted-foreground">
+                  Mostrar solo si...
+                </Label>
+                {step.showIf ? (
+                  <Button
+                    variant="ghost"
+                    size="xs"
+                    onClick={() => onUpdate({ showIf: null })}
+                  >
+                    <X className="size-3" data-icon="inline-start" />
+                    Quitar condicion
+                  </Button>
+                ) : (
+                  <Button
+                    variant="outline"
+                    size="xs"
+                    onClick={() =>
+                      onUpdate({
+                        showIf: {
+                          stepIndex: 0,
+                          operator: "equals",
+                          value: "",
+                        },
+                      })
+                    }
+                  >
+                    <Plus className="size-3" data-icon="inline-start" />
+                    Anadir condicion
+                  </Button>
+                )}
+              </div>
+
+              {step.showIf && (
+                <div className="grid gap-2 sm:grid-cols-3">
+                  {/* Which previous step */}
+                  <Select
+                    value={String(step.showIf.stepIndex)}
+                    onValueChange={(val) =>
+                      onUpdate({
+                        showIf: {
+                          ...step.showIf!,
+                          stepIndex: Number(val),
+                        },
+                      })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Paso..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {allSteps
+                        .filter((_, i) => i < index)
+                        .map((s, i) => (
+                          <SelectItem key={i} value={String(i)}>
+                            Paso {i + 1}
+                            {s.questionText
+                              ? `: ${s.questionText.slice(0, 30)}${s.questionText.length > 30 ? "..." : ""}`
+                              : ""}
+                          </SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
+
+                  {/* Operator */}
+                  <Select
+                    value={step.showIf.operator}
+                    onValueChange={(val) =>
+                      onUpdate({
+                        showIf: {
+                          ...step.showIf!,
+                          operator: val as ShowIfCondition["operator"],
+                        },
+                      })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.entries(OPERATOR_LABELS).map(([key, label]) => (
+                        <SelectItem key={key} value={key}>
+                          {label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  {/* Value */}
+                  <Input
+                    placeholder="Valor..."
+                    value={step.showIf.value}
+                    onChange={(e) =>
+                      onUpdate({
+                        showIf: {
+                          ...step.showIf!,
+                          value: (e.target as HTMLInputElement).value,
+                        },
+                      })
+                    }
+                  />
+                </div>
+              )}
             </div>
           )}
 

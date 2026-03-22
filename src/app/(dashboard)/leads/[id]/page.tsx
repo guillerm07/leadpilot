@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
 import { getLeadByIdWithMessages } from "@/lib/db/queries/leads";
+import { getLeadScore } from "@/lib/db/queries/lead-scoring";
 import { LeadDetailInfo } from "@/components/leads/lead-detail-info";
 import { LeadTimeline } from "@/components/leads/lead-timeline";
 
@@ -27,6 +28,8 @@ export default async function LeadDetailPage({
     notFound();
   }
 
+  const leadScore = await getLeadScore(id);
+
   const messages = lead.outreachMessages ?? [];
   const replies = messages.flatMap((m) =>
     (m.replies ?? []).map((r) => ({ ...r, messageSubject: m.subject }))
@@ -36,7 +39,7 @@ export default async function LeadDetailPage({
     <div className="space-y-6">
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <LeadDetailInfo lead={lead} />
+          <LeadDetailInfo lead={lead} score={leadScore?.score ?? 0} />
         </div>
         <div className="lg:col-span-1">
           <LeadTimeline messages={messages} replies={replies} />

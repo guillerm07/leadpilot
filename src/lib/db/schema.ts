@@ -154,6 +154,7 @@ export const leadsRelations = relations(leads, ({ one, many }) => ({
   consentLog: many(consentLog),
   qualificationSubmissions: many(qualificationSubmissions),
   auditResults: many(auditResults),
+  score: one(leadScores),
 }));
 
 // ─── Lead Enrichments ────────────────────────────────────────────────────────
@@ -1123,5 +1124,32 @@ export const metaAdsMetricsRelations = relations(metaAdsMetrics, ({ one }) => ({
   metaAd: one(metaAds, {
     fields: [metaAdsMetrics.metaAdId],
     references: [metaAds.id],
+  }),
+}));
+
+// ─── Lead Scores ────────────────────────────────────────────────────────────
+
+export const leadScores = pgTable("lead_scores", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  leadId: uuid("lead_id")
+    .references(() => leads.id)
+    .notNull()
+    .unique(),
+  score: integer("score").default(0).notNull(),
+  emailOpens: integer("email_opens").default(0),
+  emailClicks: integer("email_clicks").default(0),
+  emailReplies: integer("email_replies").default(0),
+  formSubmissions: integer("form_submissions").default(0),
+  websiteVisits: integer("website_visits").default(0),
+  lastActivityAt: timestamp("last_activity_at", { withTimezone: true }),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+});
+
+export const leadScoresRelations = relations(leadScores, ({ one }) => ({
+  lead: one(leads, {
+    fields: [leadScores.leadId],
+    references: [leads.id],
   }),
 }));

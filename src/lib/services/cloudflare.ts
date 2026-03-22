@@ -45,16 +45,45 @@ async function cfFetch(
   return res;
 }
 
+// Maps short query param keys to template variable names
+const VARIABLE_PARAM_MAP: Record<string, string> = {
+  fn: "firstName",
+  ln: "lastName",
+  company: "companyName",
+  industry: "industry",
+  city: "city",
+  cf1: "customField1",
+};
+
 function generateWorkerScript(
   htmlContent: string,
   abConfig?: DeployWorkerParams["abConfig"]
 ): string {
+  const variableMapJson = JSON.stringify(VARIABLE_PARAM_MAP);
+
   if (!abConfig || abConfig.variants.length === 0) {
-    // Simple static HTML worker
+    // Simple static HTML worker with dynamic variable replacement
     return `
+const VARIABLE_MAP = ${variableMapJson};
+
+function replaceVariables(html, url) {
+  const params = new URL(url).searchParams;
+  let result = html;
+  for (const [param, varName] of Object.entries(VARIABLE_MAP)) {
+    const value = params.get(param);
+    if (value) {
+      result = result.replaceAll("{{" + varName + "}}", decodeURIComponent(value));
+    }
+  }
+  // Remove any unreplaced variables
+  result = result.replace(/\\{\\{(firstName|lastName|companyName|industry|city|customField1)\\}\\}/g, "");
+  return result;
+}
+
 export default {
   async fetch(request) {
-    const html = ${JSON.stringify(htmlContent)};
+    const baseHtml = ${JSON.stringify(htmlContent)};
+    const html = replaceVariables(baseHtml, request.url);
     return new Response(html, {
       headers: { "Content-Type": "text/html;charset=UTF-8" },
     });
@@ -63,12 +92,26 @@ export default {
 `.trim();
   }
 
-  // A/B test worker with traffic splitting
+  // A/B test worker with traffic splitting and variable replacement
   const variantsJson = JSON.stringify(abConfig.variants);
   return `
 const VARIANTS = ${variantsJson};
 const TRACKING_ENDPOINT = ${JSON.stringify(abConfig.trackingEndpoint)};
 const EXPERIMENT_ID = ${JSON.stringify(abConfig.experimentId)};
+const VARIABLE_MAP = ${variableMapJson};
+
+function replaceVariables(html, url) {
+  const params = new URL(url).searchParams;
+  let result = html;
+  for (const [param, varName] of Object.entries(VARIABLE_MAP)) {
+    const value = params.get(param);
+    if (value) {
+      result = result.replaceAll("{{" + varName + "}}", decodeURIComponent(value));
+    }
+  }
+  result = result.replace(/\\{\\{(firstName|lastName|companyName|industry|city|customField1)\\}\\}/g, "");
+  return result;
+}
 
 function pickVariant(visitorId) {
   let hash = 0;
@@ -146,7 +189,8 @@ export default {
   async fetch(request) {
     const visitorId = getVisitorId(request);
     const variant = pickVariant(visitorId);
-    const html = injectTrackingScript(variant.htmlContent, variant.id, visitorId);
+    const personalizedHtml = replaceVariables(variant.htmlContent, request.url);
+    const html = injectTrackingScript(personalizedHtml, variant.id, visitorId);
 
     return new Response(html, {
       headers: {

@@ -5,6 +5,12 @@ import { cn } from "@/lib/utils";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
+type ShowIfCondition = {
+  stepIndex: number;
+  operator: "equals" | "not_equals" | "contains";
+  value: string;
+};
+
 type FormStep = {
   id: string;
   stepOrder: number;
@@ -12,7 +18,7 @@ type FormStep = {
   questionType: "text" | "select" | "radio" | "number" | "email" | "phone";
   options: string[] | null;
   isRequired: boolean;
-  qualificationRules: { qualifyingValues?: string[] } | null;
+  qualificationRules: { qualifyingValues?: string[]; showIf?: ShowIfCondition } | null;
 };
 
 type FormConfig = {

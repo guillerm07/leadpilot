@@ -23,6 +23,10 @@ import {
   Save,
   Loader2,
   Eye,
+  Wand2,
+  ToggleLeft,
+  ToggleRight,
+  Check,
 } from "lucide-react";
 import {
   createTemplateAction,
@@ -59,6 +63,7 @@ const AVAILABLE_VARIABLES = [
   { key: "rating", label: "rating" },
   { key: "resumen_ia", label: "resumen_ia" },
   { key: "redes_sociales", label: "redes_sociales" },
+  { key: "ai_intro", label: "ai_intro" },
 ] as const;
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -86,6 +91,13 @@ export function TemplateEditor({ template, isNew = false }: TemplateEditorProps)
   } | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [previewError, setPreviewError] = useState<string | null>(null);
+
+  // AI suggestions state
+  const [suggestedSubjects, setSuggestedSubjects] = useState<string[]>([]);
+  const [isGeneratingSubjects, setIsGeneratingSubjects] = useState(false);
+  const [personalizeIntro, setPersonalizeIntro] = useState(
+    template?.aiPromptBody?.includes("{{ai_intro}}") ?? false
+  );
 
   // Refs for inserting variables
   const subjectRef = useRef<HTMLTextAreaElement>(null);
@@ -195,6 +207,49 @@ export function TemplateEditor({ template, isNew = false }: TemplateEditorProps)
     }
   }
 
+  async function handleGenerateSubjectSuggestions() {
+    if (!aiPromptSubject.trim() && !aiPromptBody.trim()) return;
+
+    setIsGeneratingSubjects(true);
+    setSuggestedSubjects([]);
+
+    try {
+      const res = await fetch("/api/ai/suggest-subjects", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          templatePrompt: aiPromptSubject.trim() || aiPromptBody.trim(),
+          count: 5,
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Error generating suggestions");
+      }
+
+      const data: { subjects: string[] } = await res.json();
+      setSuggestedSubjects(data.subjects ?? []);
+    } catch {
+      setSuggestedSubjects([]);
+    } finally {
+      setIsGeneratingSubjects(false);
+    }
+  }
+
+  function handleSelectSuggestion(subject: string) {
+    setAiPromptSubject(subject);
+    setSuggestedSubjects([]);
+  }
+
+  function handleTogglePersonalizeIntro() {
+    const next = !personalizeIntro;
+    setPersonalizeIntro(next);
+
+    if (next && !aiPromptBody.includes("{{ai_intro}}")) {
+      setAiPromptBody("{{ai_intro}}\n\n" + aiPromptBody);
+    }
+  }
+
   // ─── Render ────────────────────────────────────────────────────────────
 
   return (
@@ -293,7 +348,74 @@ export function TemplateEditor({ template, isNew = false }: TemplateEditorProps)
                       placeholder="Ej: Asunto corto y personalizado que mencione el nombre de la empresa y destaque un beneficio concreto..."
                       className="min-h-20"
                     />
+
+                    {/* AI subject suggestions */}
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={handleGenerateSubjectSuggestions}
+                      disabled={
+                        isGeneratingSubjects ||
+                        (!aiPromptSubject.trim() && !aiPromptBody.trim())
+                      }
+                    >
+                      {isGeneratingSubjects ? (
+                        <Loader2 className="mr-1 size-3.5 animate-spin" />
+                      ) : (
+                        <Wand2 className="mr-1 size-3.5" />
+                      )}
+                      {isGeneratingSubjects
+                        ? "Generando..."
+                        : "IA Sugerencias"}
+                    </Button>
+
+                    {suggestedSubjects.length > 0 && (
+                      <div className="space-y-1.5">
+                        <p className="text-xs font-medium text-muted-foreground">
+                          Sugerencias de asunto (haz clic para seleccionar):
+                        </p>
+                        <div className="flex flex-col gap-1">
+                          {suggestedSubjects.map((subject, idx) => (
+                            <button
+                              key={idx}
+                              type="button"
+                              onClick={() => handleSelectSuggestion(subject)}
+                              className="group flex items-start gap-2 rounded-md border border-zinc-200 bg-zinc-50 px-3 py-2 text-left text-xs text-zinc-700 transition-colors hover:border-primary/50 hover:bg-primary/5 hover:text-primary"
+                            >
+                              <Check className="mt-0.5 size-3 shrink-0 text-zinc-400 group-hover:text-primary" />
+                              <span>{subject}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
+
+                  {/* Personalize intro toggle */}
+                  <div className="flex items-center justify-between rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2.5">
+                    <div className="space-y-0.5">
+                      <p className="text-sm font-medium text-zinc-700">
+                        Personalizar intro
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Cada email tendra una intro unica generada por IA
+                        basada en los datos del lead.
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleTogglePersonalizeIntro}
+                      className="shrink-0 text-zinc-400 transition-colors hover:text-primary"
+                    >
+                      {personalizeIntro ? (
+                        <ToggleRight className="size-7 text-primary" />
+                      ) : (
+                        <ToggleLeft className="size-7" />
+                      )}
+                    </button>
+                  </div>
+
                   <div className="space-y-2">
                     <Label htmlFor="body-prompt">
                       Instrucciones para el cuerpo

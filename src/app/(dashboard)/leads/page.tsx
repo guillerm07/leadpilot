@@ -1,13 +1,15 @@
 import { cookies } from "next/headers";
 import { getLeadsByClient, getLeadsCount } from "@/lib/db/queries/leads";
 import { LeadsList } from "@/components/leads/leads-list";
+import { LeadsKanban } from "@/components/leads/leads-kanban";
+import { ViewToggle } from "@/components/leads/view-toggle";
 
 const PAGE_SIZE = 50;
 
 export default async function LeadsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string; status?: string; search?: string }>;
+  searchParams: Promise<{ page?: string; status?: string; search?: string; view?: string }>;
 }) {
   const cookieStore = await cookies();
   const activeClientId = cookieStore.get("active_client_id")?.value;
@@ -31,17 +33,23 @@ export default async function LeadsPage({
   const page = Math.max(1, parseInt(params.page ?? "1", 10));
   const status = params.status || undefined;
   const search = params.search || undefined;
+  const view = params.view === "kanban" ? "kanban" : "table";
 
   const offset = (page - 1) * PAGE_SIZE;
 
+  // For kanban view, fetch all leads (no pagination) but respect status/search filters
+  const isKanban = view === "kanban";
+  const fetchLimit = isKanban ? 500 : PAGE_SIZE;
+  const fetchOffset = isKanban ? 0 : offset;
+
   const [leads, totalCount] = await Promise.all([
     getLeadsByClient(activeClientId, {
-      status,
+      status: isKanban ? undefined : status,
       search,
-      limit: PAGE_SIZE,
-      offset,
+      limit: fetchLimit,
+      offset: fetchOffset,
     }),
-    getLeadsCount(activeClientId, { status, search }),
+    getLeadsCount(activeClientId, { status: isKanban ? undefined : status, search }),
   ]);
 
   return (
@@ -55,17 +63,22 @@ export default async function LeadsPage({
             {totalCount} {totalCount === 1 ? "lead" : "leads"} en total
           </p>
         </div>
+        <ViewToggle currentView={view} />
       </div>
 
-      <LeadsList
-        leads={leads}
-        totalCount={totalCount}
-        currentPage={page}
-        pageSize={PAGE_SIZE}
-        currentStatus={status}
-        currentSearch={search}
-        clientId={activeClientId}
-      />
+      {view === "kanban" ? (
+        <LeadsKanban leads={leads} />
+      ) : (
+        <LeadsList
+          leads={leads}
+          totalCount={totalCount}
+          currentPage={page}
+          pageSize={PAGE_SIZE}
+          currentStatus={status}
+          currentSearch={search}
+          clientId={activeClientId}
+        />
+      )}
     </div>
   );
 }

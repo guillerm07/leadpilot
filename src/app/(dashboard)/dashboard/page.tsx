@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
-import { eq, and, gte, count, sql, desc } from "drizzle-orm";
+import { eq, and, gte, count, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { leads, outreachMessages, outreachReplies, clients, workspaces } from "@/lib/db/schema";
+import { leads, outreachReplies, clients, workspaces } from "@/lib/db/schema";
 import { requireAuth } from "@/lib/auth/helpers";
 import {
   getDashboardMetrics,

@@ -92,6 +92,11 @@ interface Lead {
   clientId: string;
 }
 
+interface LeadScoreData {
+  leadId: string;
+  score: number;
+}
+
 interface LeadsListProps {
   leads: Lead[];
   totalCount: number;
@@ -100,6 +105,7 @@ interface LeadsListProps {
   currentStatus?: string;
   currentSearch?: string;
   clientId: string;
+  scores?: LeadScoreData[];
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -112,7 +118,11 @@ export function LeadsList({
   currentStatus,
   currentSearch,
   clientId,
+  scores = [],
 }: LeadsListProps) {
+  // Build a map for quick score lookups
+  const scoreMap = new Map(scores.map((s) => [s.leadId, s.score]));
+
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
@@ -331,6 +341,7 @@ export function LeadsList({
                   <TableHead>Email</TableHead>
                   <TableHead>Estado</TableHead>
                   <TableHead>Fuente</TableHead>
+                  <TableHead>Score</TableHead>
                   <TableHead>Último contacto</TableHead>
                   <TableHead className="w-10" />
                 </TableRow>
@@ -383,6 +394,9 @@ export function LeadsList({
                       <Badge variant="outline">
                         {SOURCE_LABELS[lead.source as LeadSource] ?? lead.source}
                       </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <LeadScoreBar score={scoreMap.get(lead.id) ?? 0} />
                     </TableCell>
                     <TableCell className="text-zinc-500">
                       {formatDate(lead.updatedAt)}
@@ -488,6 +502,29 @@ export function LeadsList({
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
+
+function LeadScoreBar({ score }: { score: number }) {
+  const color =
+    score >= 70
+      ? "bg-green-500"
+      : score >= 40
+        ? "bg-yellow-500"
+        : score >= 1
+          ? "bg-red-400"
+          : "bg-zinc-200";
+
+  return (
+    <div className="flex items-center gap-2">
+      <div className="h-2 w-16 overflow-hidden rounded-full bg-zinc-100">
+        <div
+          className={`h-full rounded-full transition-all ${color}`}
+          style={{ width: `${Math.max(score, 0)}%` }}
+        />
+      </div>
+      <span className="text-xs tabular-nums text-zinc-500">{score}</span>
+    </div>
+  );
+}
 
 function generatePageNumbers(
   current: number,

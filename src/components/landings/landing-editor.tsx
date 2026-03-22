@@ -15,12 +15,15 @@ import {
   Send,
   Save,
   Loader2,
+  Variable,
+  Eye,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Label } from "@/components/ui/label";
 import {
   updateLandingAction,
   deployLandingAction,
@@ -64,6 +67,15 @@ const DEVICE_WIDTHS: Record<string, string> = {
   mobile: "375px",
 };
 
+const LANDING_VARIABLES = [
+  { key: "firstName", label: "Nombre", placeholder: "Juan" },
+  { key: "lastName", label: "Apellido", placeholder: "Garcia" },
+  { key: "companyName", label: "Empresa", placeholder: "Acme S.L." },
+  { key: "industry", label: "Sector", placeholder: "Restauracion" },
+  { key: "city", label: "Ciudad", placeholder: "Madrid" },
+  { key: "customField1", label: "Campo personalizado", placeholder: "Valor personalizado" },
+] as const;
+
 export function LandingEditor({
   landing,
   hasExperiment,
@@ -87,20 +99,66 @@ export function LandingEditor({
   const [isSaving, setIsSaving] = useState(false);
   const [isDeploying, setIsDeploying] = useState(false);
   const [isSendingChat, setIsSendingChat] = useState(false);
+  const [showPreviewData, setShowPreviewData] = useState(false);
+  const [previewVariables, setPreviewVariables] = useState<Record<string, string>>(
+    Object.fromEntries(LANDING_VARIABLES.map((v) => [v.key, ""]))
+  );
+
+  const replaceHtmlVariables = useCallback(
+    (html: string, vars: Record<string, string>): string => {
+      let result = html;
+      for (const [key, value] of Object.entries(vars)) {
+        if (value) {
+          result = result.replaceAll(`{{${key}}}`, value);
+        }
+      }
+      return result;
+    },
+    []
+  );
 
   const updatePreview = useCallback(
-    (html: string) => {
+    (html: string, vars?: Record<string, string>) => {
       if (iframeRef.current) {
         const doc = iframeRef.current.contentDocument;
         if (doc) {
+          const finalHtml = vars
+            ? replaceHtmlVariables(html, vars)
+            : html;
           doc.open();
-          doc.write(html);
+          doc.write(finalHtml);
           doc.close();
         }
       }
     },
-    []
+    [replaceHtmlVariables]
   );
+
+  function handleInsertVariable(variableKey: string) {
+    const tag = `{{${variableKey}}}`;
+    setHtmlContent((prev) => prev + tag);
+    updatePreview(htmlContent + tag, showPreviewData ? previewVariables : undefined);
+  }
+
+  function handlePreviewWithData() {
+    setShowPreviewData((prev) => {
+      const next = !prev;
+      if (next) {
+        updatePreview(htmlContent, previewVariables);
+      } else {
+        updatePreview(htmlContent);
+      }
+      return next;
+    });
+  }
+
+  function handlePreviewVariableChange(key: string, value: string) {
+    const updated = { ...previewVariables, [key]: value };
+    setPreviewVariables(updated);
+    if (showPreviewData) {
+      updatePreview(htmlContent, updated);
+    }
+  }
 
   async function handleSave() {
     setIsSaving(true);
@@ -328,8 +386,9 @@ export function LandingEditor({
 
       {/* Main content: two columns */}
       <div className="flex flex-1 gap-4 overflow-hidden pt-4">
-        {/* Left: AI Chat */}
-        <div className="flex w-[380px] shrink-0 flex-col rounded-lg border border-zinc-200 bg-white">
+        {/* Left: AI Chat + Variables */}
+        <div className="flex w-[380px] shrink-0 flex-col gap-3 overflow-y-auto">
+        <div className="flex flex-1 flex-col rounded-lg border border-zinc-200 bg-white">
           <div className="border-b border-zinc-200 px-4 py-3">
             <h3 className="text-sm font-semibold text-zinc-900">
               Chat con IA
@@ -410,6 +469,65 @@ export function LandingEditor({
           </div>
         </div>
 
+        {/* Variables Panel */}
+        <div className="shrink-0 rounded-lg border border-zinc-200 bg-white">
+          <div className="flex items-center justify-between border-b border-zinc-200 px-4 py-3">
+            <div className="flex items-center gap-2">
+              <Variable className="h-4 w-4 text-zinc-500" />
+              <h3 className="text-sm font-semibold text-zinc-900">
+                Variables dinamicas
+              </h3>
+            </div>
+            <Button
+              variant={showPreviewData ? "secondary" : "outline"}
+              size="sm"
+              onClick={handlePreviewWithData}
+            >
+              <Eye className="mr-1 h-3.5 w-3.5" />
+              {showPreviewData ? "Ocultar datos" : "Preview con datos"}
+            </Button>
+          </div>
+          <div className="space-y-3 p-4">
+            <div className="flex flex-wrap gap-1.5">
+              {LANDING_VARIABLES.map(({ key, label }) => (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => handleInsertVariable(key)}
+                  className="inline-flex items-center rounded-md border border-zinc-200 bg-zinc-50 px-2 py-1 font-mono text-xs text-zinc-600 transition-colors hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700"
+                >
+                  {`{{${key}}}`}
+                </button>
+              ))}
+            </div>
+            <p className="text-xs text-zinc-400">
+              Haz clic en una variable para insertarla en el HTML.
+            </p>
+
+            {showPreviewData && (
+              <div className="space-y-2 border-t border-zinc-100 pt-3">
+                <p className="text-xs font-medium text-zinc-500">
+                  Datos de ejemplo para la vista previa:
+                </p>
+                {LANDING_VARIABLES.map(({ key, label, placeholder }) => (
+                  <div key={key} className="space-y-1">
+                    <Label className="text-xs text-zinc-500">{label}</Label>
+                    <Input
+                      value={previewVariables[key] ?? ""}
+                      onChange={(e) =>
+                        handlePreviewVariableChange(key, e.target.value)
+                      }
+                      placeholder={placeholder}
+                      className="h-8 text-xs"
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+        </div>
+
         {/* Right: Preview / Code */}
         <div className="flex flex-1 flex-col overflow-hidden rounded-lg border border-zinc-200 bg-white">
           {/* Toolbar */}
@@ -457,7 +575,10 @@ export function LandingEditor({
               value={htmlContent}
               onChange={(e) => {
                 setHtmlContent(e.target.value);
-                updatePreview(e.target.value);
+                updatePreview(
+                  e.target.value,
+                  showPreviewData ? previewVariables : undefined
+                );
               }}
               className="flex-1 resize-none border-0 bg-zinc-950 p-4 font-mono text-sm text-green-400 outline-none"
               spellCheck={false}

@@ -68,24 +68,43 @@ export default async function GoogleAdsPage({
   if (!account) {
     return (
       <div className="space-y-6">
-        <h1 className="text-2xl font-bold tracking-tight text-zinc-900">
-          Google Ads
-        </h1>
-        <div className="flex h-[400px] items-center justify-center rounded-lg border border-dashed">
-          <div className="text-center space-y-3">
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-              <TrendingUp className="h-6 w-6 text-primary" />
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold tracking-tight text-zinc-900">
+            Google Ads
+          </h1>
+          <PeriodSelector />
+        </div>
+
+        {/* KPI Cards with 0 values */}
+        <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-6">
+          <KpiCard title="Gasto" value="0,00 €" icon={DollarSign} />
+          <KpiCard title="Impresiones" value="0" icon={Eye} />
+          <KpiCard title="Clicks" value="0" icon={MousePointerClick} />
+          <KpiCard title="CTR" value="0.00%" icon={Percent} />
+          <KpiCard title="Conversiones" value="0" icon={Target} />
+          <KpiCard title="CPA" value="-" icon={TrendingUp} />
+        </div>
+
+        {/* Empty state message inside campaigns area */}
+        <div className="space-y-3">
+          <h2 className="text-lg font-semibold text-zinc-900">Campañas</h2>
+          <div className="flex h-[300px] items-center justify-center rounded-lg border border-dashed">
+            <div className="text-center space-y-3">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+                <TrendingUp className="h-6 w-6 text-primary" />
+              </div>
+              <h2 className="text-lg font-semibold text-zinc-900">
+                Conecta tu cuenta de Google Ads para empezar
+              </h2>
+              <p className="text-sm text-zinc-500 max-w-md">
+                Vincula tu cuenta de Google Ads para ver métricas, gestionar campañas
+                y optimizar tu rendimiento publicitario.
+              </p>
+              <Link href="/settings">
+                <Button>Configurar conexión</Button>
+              </Link>
             </div>
-            <h2 className="text-lg font-semibold text-zinc-900">
-              Conecta tu cuenta de Google Ads para empezar
-            </h2>
-            <p className="text-sm text-zinc-500 max-w-md">
-              Vincula tu cuenta de Google Ads para ver métricas, gestionar campañas
-              y optimizar tu rendimiento publicitario.
-            </p>
-            <Link href="/settings">
-              <Button>Configurar conexión</Button>
-            </Link>
           </div>
         </div>
       </div>
@@ -192,7 +211,7 @@ export default async function GoogleAdsPage({
           </Button>
           <Button size="sm">
             <Plus className="mr-2 h-4 w-4" />
-            Nueva campana
+            Nueva campaña
           </Button>
         </div>
       </div>
@@ -233,7 +252,7 @@ export default async function GoogleAdsPage({
 
       {/* Campaigns Table */}
       <div className="space-y-3">
-        <h2 className="text-lg font-semibold text-zinc-900">Campanas</h2>
+        <h2 className="text-lg font-semibold text-zinc-900">Campañas</h2>
         <CampaignsTable campaigns={campaignRows} />
       </div>
     </div>

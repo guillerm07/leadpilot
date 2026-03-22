@@ -83,6 +83,7 @@ interface LeadData {
 
 interface LeadDetailInfoProps {
   lead: LeadData;
+  score?: number;
 }
 
 // TikTok icon (not in lucide)
@@ -104,7 +105,7 @@ function TikTokIcon({ className }: { className?: string }) {
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
-export function LeadDetailInfo({ lead }: LeadDetailInfoProps) {
+export function LeadDetailInfo({ lead, score = 0 }: LeadDetailInfoProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [notes, setNotes] = useState(lead.notes ?? "");
@@ -167,7 +168,10 @@ export function LeadDetailInfo({ lead }: LeadDetailInfoProps) {
                 <ArrowLeft className="size-4" />
               </Button>
               <div>
-                <CardTitle className="text-xl">{lead.companyName}</CardTitle>
+                <div className="flex items-center gap-3">
+                  <CardTitle className="text-xl">{lead.companyName}</CardTitle>
+                  <LeadScoreBadge score={score} />
+                </div>
                 <div className="mt-1 flex items-center gap-2 text-sm text-muted-foreground">
                   {lead.category && <span>{lead.category}</span>}
                   {lead.category && lead.country && <span>·</span>}
@@ -370,6 +374,40 @@ export function LeadDetailInfo({ lead }: LeadDetailInfoProps) {
           </div>
         </CardContent>
       </Card>
+    </div>
+  );
+}
+
+// ─── Lead Score Badge ────────────────────────────────────────────────────────
+
+function LeadScoreBadge({ score }: { score: number }) {
+  const color =
+    score >= 70
+      ? "bg-green-100 text-green-800 border-green-200"
+      : score >= 40
+        ? "bg-yellow-100 text-yellow-800 border-yellow-200"
+        : score >= 1
+          ? "bg-red-100 text-red-800 border-red-200"
+          : "bg-zinc-100 text-zinc-500 border-zinc-200";
+
+  const barColor =
+    score >= 70
+      ? "bg-green-500"
+      : score >= 40
+        ? "bg-yellow-500"
+        : score >= 1
+          ? "bg-red-400"
+          : "bg-zinc-300";
+
+  return (
+    <div className={`inline-flex items-center gap-2 rounded-lg border px-2.5 py-1 ${color}`}>
+      <div className="h-1.5 w-10 overflow-hidden rounded-full bg-black/10">
+        <div
+          className={`h-full rounded-full ${barColor}`}
+          style={{ width: `${Math.max(score, 0)}%` }}
+        />
+      </div>
+      <span className="text-xs font-semibold tabular-nums">{score}</span>
     </div>
   );
 }

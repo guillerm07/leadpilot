@@ -6,6 +6,7 @@ import { clients, workspaces } from "@/lib/db/schema";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Header } from "@/components/layout/header";
 import { ClientProvider } from "@/components/layout/client-provider";
+import { CommandPalette } from "@/components/layout/command-palette";
 import { SessionProvider } from "next-auth/react";
 
 export default async function DashboardLayout({
@@ -59,6 +60,7 @@ export default async function DashboardLayout({
               ) : (
                 children
               )}
+              <CommandPalette />
             </main>
           </div>
         </div>

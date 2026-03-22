@@ -170,7 +170,7 @@ export default function VideoGeneratorPage() {
       },
       {
         id: "s4",
-        text: "En solo 3 pasos, puedes tener un sistema de captacion de clientes funcionando 24/7. Primero, configuramos tu perfil. Segundo, la IA busca y contacta leads. Tercero, tu solo cierras ventas.",
+        text: "En solo 3 pasos, puedes tener un sistema de captación de clientes funcionando 24/7. Primero, configuramos tu perfil. Segundo, la IA busca y contacta leads. Tercero, tú solo cierras ventas.",
         language,
         selected: false,
       },

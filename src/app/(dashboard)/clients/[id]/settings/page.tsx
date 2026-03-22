@@ -19,6 +19,7 @@ import { ClientSettingsForm } from "@/components/clients/client-settings-form";
 import { ClientBrandForm } from "@/components/clients/client-brand-form";
 import { ClientIntegrationsForm } from "@/components/clients/client-integrations-form";
 import { ClientComplianceForm } from "@/components/clients/client-compliance-form";
+import { EmailWarmup } from "@/components/clients/email-warmup";
 
 export async function generateMetadata({
   params,
@@ -142,27 +143,61 @@ export default async function ClientSettingsPage({
 
         {/* Integrations Tab */}
         <TabsContent value="integrations">
-          <Card>
-            <CardHeader>
-              <CardTitle>Integraciones</CardTitle>
-              <CardDescription>
-                Claves API específicas de este cliente. Se almacenan
-                encriptadas. Las claves globales (Claude, Outscraper, etc.)
-                se configuran a nivel de workspace.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ClientIntegrationsForm
-                client={{
-                  id: client.id,
-                  instantlyApiKeyEncrypted: client.instantlyApiKeyEncrypted,
-                  brevoApiKeyEncrypted: client.brevoApiKeyEncrypted,
-                  brevoSenderEmail: client.brevoSenderEmail,
-                  brevoSenderName: client.brevoSenderName,
-                }}
-              />
-            </CardContent>
-          </Card>
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Integraciones</CardTitle>
+                <CardDescription>
+                  Claves API específicas de este cliente. Se almacenan
+                  encriptadas. Las claves globales (Claude, Outscraper, etc.)
+                  se configuran a nivel de workspace.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ClientIntegrationsForm
+                  client={{
+                    id: client.id,
+                    instantlyApiKeyEncrypted: client.instantlyApiKeyEncrypted,
+                    brevoApiKeyEncrypted: client.brevoApiKeyEncrypted,
+                    brevoSenderEmail: client.brevoSenderEmail,
+                    brevoSenderName: client.brevoSenderName,
+                  }}
+                />
+              </CardContent>
+            </Card>
+
+            {/* Email Warmup */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Email Warmup</CardTitle>
+                <CardDescription>
+                  Estado de calentamiento de los dominios de envio. Los
+                  datos se sincronizan desde Instantly.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <EmailWarmup
+                  domains={
+                    client.brevoSenderEmail
+                      ? [
+                          {
+                            domain: client.brevoSenderEmail.split("@")[1] ?? "sin-dominio",
+                            startDate: client.createdAt,
+                            emailsSentToday: 0,
+                            dailyLimit: 10,
+                            replyRate: 0,
+                            bounceRate: 0,
+                            spfConfigured: false,
+                            dkimConfigured: false,
+                            dmarcConfigured: false,
+                          },
+                        ]
+                      : []
+                  }
+                />
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
 
         {/* Compliance Tab */}

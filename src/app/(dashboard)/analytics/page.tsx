@@ -25,6 +25,7 @@ import {
   type AnalyticsContentProps,
 } from "@/components/analytics/analytics-content";
 import { PeriodSelector } from "@/components/analytics/period-selector";
+import { RealTimeWidget } from "@/components/analytics/real-time-widget";
 
 interface AnalyticsPageProps {
   searchParams: Promise<{ period?: string; from?: string; to?: string }>;
@@ -192,6 +193,7 @@ export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps
           </Link>
         </div>
       </div>
+      <RealTimeWidget />
       <AnalyticsContent {...analyticsProps} />
     </div>
   );
