@@ -159,7 +159,7 @@ export default async function SequenceDetailPage({
           <Card>
             <CardContent className="flex flex-col items-center justify-center py-16">
               <p className="text-sm text-muted-foreground">
-                Los leads asignados a esta secuencia apareceran aqui.
+                Los leads asignados a esta secuencia aparecerán aquí.
               </p>
             </CardContent>
           </Card>

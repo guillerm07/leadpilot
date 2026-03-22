@@ -49,8 +49,8 @@ export async function GET(request: NextRequest) {
     if (!parsed.success) {
       return new NextResponse(
         buildHtmlPage(
-          "Enlace no valido",
-          "El enlace de baja no es valido o ha expirado."
+          "Enlace no válido",
+          "El enlace de baja no es válido o ha expirado."
         ),
         { status: 400, headers: { "Content-Type": "text/html; charset=utf-8" } }
       );
@@ -62,8 +62,8 @@ export async function GET(request: NextRequest) {
     if (!verifyUnsubscribeToken(leadId, clientId, token)) {
       return new NextResponse(
         buildHtmlPage(
-          "Enlace no valido",
-          "El enlace de baja no es valido o ha expirado."
+          "Enlace no válido",
+          "El enlace de baja no es válido o ha expirado."
         ),
         { status: 403, headers: { "Content-Type": "text/html; charset=utf-8" } }
       );
@@ -80,7 +80,7 @@ export async function GET(request: NextRequest) {
       return new NextResponse(
         buildHtmlPage(
           "No encontrado",
-          "No se encontro el registro solicitado."
+          "No se encontró el registro solicitado."
         ),
         { status: 404, headers: { "Content-Type": "text/html; charset=utf-8" } }
       );
@@ -90,8 +90,8 @@ export async function GET(request: NextRequest) {
     if (lead[0].clientId !== clientId) {
       return new NextResponse(
         buildHtmlPage(
-          "Enlace no valido",
-          "El enlace de baja no es valido."
+          "Enlace no válido",
+          "El enlace de baja no es válido."
         ),
         { status: 403, headers: { "Content-Type": "text/html; charset=utf-8" } }
       );
@@ -102,7 +102,7 @@ export async function GET(request: NextRequest) {
       return new NextResponse(
         buildHtmlPage(
           "Ya dado de baja",
-          "Tu direccion de email ya fue dada de baja anteriormente. No recibiras mas comunicaciones."
+          "Tu dirección de email ya fue dada de baja anteriormente. No recibirás más comunicaciones."
         ),
         { status: 200, headers: { "Content-Type": "text/html; charset=utf-8" } }
       );
@@ -125,7 +125,7 @@ export async function GET(request: NextRequest) {
     return new NextResponse(
       buildHtmlPage(
         "Baja confirmada",
-        "Te has dado de baja correctamente. No recibiras mas comunicaciones de nuestra parte. Lamentamos las molestias."
+        "Te has dado de baja correctamente. No recibirás más comunicaciones de nuestra parte. Lamentamos las molestias."
       ),
       { status: 200, headers: { "Content-Type": "text/html; charset=utf-8" } }
     );
@@ -134,7 +134,7 @@ export async function GET(request: NextRequest) {
     return new NextResponse(
       buildHtmlPage(
         "Error",
-        "Ha ocurrido un error al procesar tu solicitud. Por favor, intentalo de nuevo mas tarde."
+        "Ha ocurrido un error al procesar tu solicitud. Por favor, inténtalo de nuevo más tarde."
       ),
       { status: 500, headers: { "Content-Type": "text/html; charset=utf-8" } }
     );

@@ -32,7 +32,7 @@ const PRESET_PROFILES = [
     name: "Compliance Legal",
     icon: Shield,
     description:
-      "Verifica aviso legal, politica de privacidad, cookies y GDPR",
+      "Verifica aviso legal, política de privacidad, cookies y GDPR",
     categories: ["legal", "cookies", "gdpr"],
     color: "text-blue-600 bg-blue-50",
   },
@@ -50,7 +50,7 @@ const PRESET_PROFILES = [
     name: "Accesibilidad",
     icon: Eye,
     description:
-      "Comprueba contraste, textos alternativos, formularios y navegacion por teclado",
+      "Comprueba contraste, textos alternativos, formularios y navegación por teclado",
     categories: ["accessibility"],
     color: "text-purple-600 bg-purple-50",
   },
@@ -102,7 +102,7 @@ export default async function AuditProfilesPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-zinc-900">
-            Perfiles de Auditoria
+            Perfiles de Auditoría
           </h1>
           <p className="text-sm text-zinc-500">
             Configura que aspectos auditar en los sitios web de tus leads
@@ -206,8 +206,8 @@ export default async function AuditProfilesPage() {
                       <span>
                         {profile.jobsCount}{" "}
                         {profile.jobsCount === 1
-                          ? "auditoria"
-                          : "auditorias"}
+                          ? "auditoría"
+                          : "auditorías"}
                       </span>
                       <span>Creado {formatDate(profile.createdAt)}</span>
                     </div>

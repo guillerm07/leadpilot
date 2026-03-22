@@ -228,7 +228,7 @@ export function TemplateEditor({ template, isNew = false }: TemplateEditorProps)
         <div className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle className="text-sm">Configuracion</CardTitle>
+              <CardTitle className="text-sm">Configuración</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {/* Name */}
@@ -320,7 +320,7 @@ export function TemplateEditor({ template, isNew = false }: TemplateEditorProps)
                     value={aiPromptBody}
                     onChange={(e) => setAiPromptBody(e.target.value)}
                     onFocus={() => setActiveField("message")}
-                    placeholder="Ej: Mensaje corto y cercano para WhatsApp. Maximo 3 lineas. Mencion personalizada y pregunta directa..."
+                    placeholder="Ej: Mensaje corto y cercano para WhatsApp. Máximo 3 líneas. Mención personalizada y pregunta directa..."
                     className="min-h-36"
                   />
                 </div>

@@ -167,11 +167,11 @@ export default async function SubmissionsPage({
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-16">
             <h3 className="text-base font-medium text-zinc-900">
-              No hay submissions todavia
+              No hay submissions todavía
             </h3>
             <p className="mt-1 max-w-sm text-center text-sm text-muted-foreground">
               Cuando los leads completen el formulario, las respuestas
-              apareceran aqui.
+              aparecerán aquí.
             </p>
           </CardContent>
         </Card>
@@ -183,7 +183,7 @@ export default async function SubmissionsPage({
                 <TableHead>Lead</TableHead>
                 <TableHead>Respuestas</TableHead>
                 <TableHead className="text-center">Cualificado</TableHead>
-                <TableHead className="text-center">Reunion</TableHead>
+                <TableHead className="text-center">Reunión</TableHead>
                 <TableHead>Fuente</TableHead>
                 <TableHead>Fecha</TableHead>
               </TableRow>
@@ -215,7 +215,7 @@ export default async function SubmissionsPage({
                           {submission.leadCompanyName ?? submission.leadEmail ?? "Lead"}
                         </Link>
                       ) : (
-                        <span className="text-muted-foreground">Anonimo</span>
+                        <span className="text-muted-foreground">Anónimo</span>
                       )}
                     </TableCell>
                     <TableCell>

@@ -67,13 +67,13 @@ const moduleNavItems: NavItem[] = [
   { label: "Meta Ads", href: "/meta-ads", icon: Megaphone },
   { label: "Video IA", href: "/video-generator", icon: Video },
   { label: "Landing Pages", href: "/landing-pages", icon: Globe },
-  { label: "Auditorias", href: "/audits", icon: ShieldCheck },
+  { label: "Auditorías", href: "/audits", icon: ShieldCheck },
   { label: "Analytics", href: "/analytics", icon: BarChart3 },
 ];
 
 const bottomNavItems: NavItem[] = [
   { label: "Clientes", href: "/clients", icon: Building2 },
-  { label: "Configuracion", href: "/settings", icon: Settings },
+  { label: "Configuración", href: "/settings", icon: Settings },
 ];
 
 function NavLink({
@@ -276,7 +276,7 @@ export function Sidebar() {
                 }
               />
               <TooltipContent side="right" sideOffset={8}>
-                Cerrar sesion
+                Cerrar sesión
               </TooltipContent>
             </Tooltip>
           ) : (
@@ -286,7 +286,7 @@ export function Sidebar() {
                 className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-zinc-400 transition-colors hover:bg-zinc-800/50 hover:text-zinc-200"
               >
                 <LogOut className="size-4 shrink-0" />
-                <span className="truncate">Cerrar sesion</span>
+                <span className="truncate">Cerrar sesión</span>
               </button>
               <p className="px-3 py-1 text-[10px] text-zinc-600">
                 LeadPilot v0.1

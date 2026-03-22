@@ -130,7 +130,7 @@ export async function deleteFormAction(formId: string) {
   await getCurrentUserId();
 
   if (!z.string().uuid().safeParse(formId).success) {
-    throw new Error("ID de formulario no valido");
+    throw new Error("ID de formulario no válido");
   }
 
   // Delete steps first
@@ -213,7 +213,7 @@ export async function deleteStepAction(stepId: string) {
   await getCurrentUserId();
 
   if (!z.string().uuid().safeParse(stepId).success) {
-    throw new Error("ID de paso no valido");
+    throw new Error("ID de paso no válido");
   }
 
   await db

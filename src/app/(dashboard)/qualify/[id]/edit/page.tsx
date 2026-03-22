@@ -52,7 +52,7 @@ export default async function FormEditPage({
             Nuevo formulario
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Configura las preguntas y reglas de cualificacion
+            Configura las preguntas y reglas de cualificación
           </p>
         </div>
 

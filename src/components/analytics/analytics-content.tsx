@@ -73,7 +73,7 @@ const CHANNEL_COLORS: Record<string, string> = {
   whatsapp: "#22c55e",
 };
 
-const DAY_LABELS = ["Dom", "Lun", "Mar", "Mie", "Jue", "Vie", "Sab"];
+const DAY_LABELS = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
 
 // ─── Component ──────────────────────────────────────────────────────────────
 

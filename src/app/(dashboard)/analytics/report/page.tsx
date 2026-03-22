@@ -1,7 +1,8 @@
 import { cookies } from "next/headers";
 import { db } from "@/lib/db";
-import { clients } from "@/lib/db/schema";
+import { clients, workspaces } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
+import { requireAuth } from "@/lib/auth/helpers";
 import {
   getOutreachFunnel,
   getChannelBreakdown,
@@ -68,7 +69,31 @@ function getPeriodLabel(period: string, from?: string, to?: string): string {
 
 export default async function ReportPage({ searchParams }: ReportPageProps) {
   const cookieStore = await cookies();
-  const activeClientId = cookieStore.get("active_client_id")?.value;
+  let activeClientId = cookieStore.get("active_client_id")?.value;
+
+  // If no client selected via cookie, try to pick the first client from the workspace
+  if (!activeClientId) {
+    const session = await requireAuth();
+    const workspace = await db.query.workspaces.findFirst({
+      where: eq(workspaces.ownerUserId, session.user.id),
+    });
+
+    if (workspace) {
+      const [firstClient] = await db
+        .select({ id: clients.id })
+        .from(clients)
+        .where(eq(clients.workspaceId, workspace.id))
+        .limit(1);
+
+      if (firstClient) {
+        activeClientId = firstClient.id;
+        cookieStore.set("active_client_id", activeClientId, {
+          path: "/",
+          maxAge: 31536000,
+        });
+      }
+    }
+  }
 
   if (!activeClientId) {
     return (

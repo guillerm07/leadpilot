@@ -129,7 +129,7 @@ export function LandingsList({
         <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-zinc-300 py-12">
           <LayoutGrid className="mb-4 h-10 w-10 text-zinc-400" />
           <p className="text-sm text-zinc-500">
-            No hay landing pages todavia.
+            No hay landing pages todavía.
           </p>
           <Button onClick={handleCreate} variant="outline" className="mt-4">
             <Plus className="mr-2 h-4 w-4" />

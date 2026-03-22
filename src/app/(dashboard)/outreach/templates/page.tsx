@@ -49,7 +49,7 @@ export default async function TemplatesPage({
         <div>
           <h1 className="text-2xl font-semibold text-zinc-900">Plantillas</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Plantillas de mensajes con instrucciones para generacion IA
+            Plantillas de mensajes con instrucciones para generación IA
           </p>
         </div>
         <Link href="/outreach/templates/new">
@@ -123,9 +123,9 @@ export default async function TemplatesPage({
               <TableRow>
                 <TableHead>Nombre</TableHead>
                 <TableHead>Canal</TableHead>
-                <TableHead className="text-center">Version</TableHead>
+                <TableHead className="text-center">Versión</TableHead>
                 <TableHead className="text-center">Usada en secuencias</TableHead>
-                <TableHead>Ultima edicion</TableHead>
+                <TableHead>Última edición</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

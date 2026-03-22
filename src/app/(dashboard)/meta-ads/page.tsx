@@ -78,11 +78,11 @@ export default async function MetaAdsPage({
               Conecta tu cuenta de Meta Business para empezar
             </h2>
             <p className="text-sm text-zinc-500 max-w-md">
-              Vincula tu cuenta de Meta Business para gestionar campanas en
-              Facebook e Instagram, ver metricas y optimizar tu ROAS.
+              Vincula tu cuenta de Meta Business para gestionar campañas en
+              Facebook e Instagram, ver métricas y optimizar tu ROAS.
             </p>
             <Link href="/settings">
-              <Button>Configurar conexion</Button>
+              <Button>Configurar conexión</Button>
             </Link>
           </div>
         </div>

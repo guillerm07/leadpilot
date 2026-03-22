@@ -46,21 +46,21 @@ const CHECK_CATEGORIES: CheckCategory[] = [
       {
         id: "legal_notice",
         label: "Aviso legal",
-        description: "Pagina de aviso legal presente y accesible",
+        description: "Página de aviso legal presente y accesible",
       },
       {
         id: "privacy_policy",
-        label: "Politica de privacidad",
-        description: "Politica de privacidad completa y actualizada",
+        label: "Política de privacidad",
+        description: "Política de privacidad completa y actualizada",
       },
       {
         id: "cookie_policy",
-        label: "Politica de cookies",
-        description: "Politica de cookies detallada",
+        label: "Política de cookies",
+        description: "Política de cookies detallada",
       },
       {
         id: "terms_conditions",
-        label: "Terminos y condiciones",
+        label: "Términos y condiciones",
         description: "T&C visibles y enlazados desde el footer",
       },
     ],
@@ -83,7 +83,7 @@ const CHECK_CATEGORIES: CheckCategory[] = [
       },
       {
         id: "reject_option",
-        label: "Opcion de rechazar",
+        label: "Opción de rechazar",
         description: "El banner permite rechazar cookies no esenciales",
       },
     ],
@@ -97,7 +97,7 @@ const CHECK_CATEGORIES: CheckCategory[] = [
       {
         id: "consent_checkbox",
         label: "Checkbox de consentimiento",
-        description: "Formularios incluyen checkbox de consentimiento explicito",
+        description: "Formularios incluyen checkbox de consentimiento explícito",
       },
       {
         id: "double_opt_in",
@@ -106,8 +106,8 @@ const CHECK_CATEGORIES: CheckCategory[] = [
       },
       {
         id: "data_deletion",
-        label: "Eliminacion de datos",
-        description: "Mecanismo accesible para solicitar eliminacion de datos",
+        label: "Eliminación de datos",
+        description: "Mecanismo accesible para solicitar eliminación de datos",
       },
     ],
   },
@@ -124,13 +124,13 @@ const CHECK_CATEGORIES: CheckCategory[] = [
       },
       {
         id: "valid_certificate",
-        label: "Certificado valido",
-        description: "El certificado SSL es valido y no ha expirado",
+        label: "Certificado válido",
+        description: "El certificado SSL es válido y no ha expirado",
       },
       {
         id: "mixed_content",
         label: "Contenido mixto",
-        description: "No hay recursos cargados por HTTP en paginas HTTPS",
+        description: "No hay recursos cargados por HTTP en páginas HTTPS",
       },
     ],
   },
@@ -148,7 +148,7 @@ const CHECK_CATEGORIES: CheckCategory[] = [
       {
         id: "headings_structure",
         label: "Estructura de headings",
-        description: "Jerarquia correcta de H1-H6",
+        description: "Jerarquía correcta de H1-H6",
       },
       {
         id: "schema_markup",
@@ -176,7 +176,7 @@ const CHECK_CATEGORIES: CheckCategory[] = [
       {
         id: "alt_text",
         label: "Textos alternativos",
-        description: "Todas las imagenes tienen atributo alt descriptivo",
+        description: "Todas las imágenes tienen atributo alt descriptivo",
       },
       {
         id: "form_labels",
@@ -185,7 +185,7 @@ const CHECK_CATEGORIES: CheckCategory[] = [
       },
       {
         id: "keyboard_navigation",
-        label: "Navegacion por teclado",
+        label: "Navegación por teclado",
         description: "El sitio es navegable completamente con teclado",
       },
     ],
@@ -364,7 +364,7 @@ export default function AuditProfileEditorPage() {
         </Button>
         <div className="flex-1">
           <h1 className="text-2xl font-bold tracking-tight text-zinc-900">
-            {isNew ? "Nuevo perfil de auditoria" : "Editar perfil"}
+            {isNew ? "Nuevo perfil de auditoría" : "Editar perfil"}
           </h1>
         </div>
         <Button onClick={handleSave} disabled={isSaving || !name.trim()}>
@@ -384,7 +384,7 @@ export default function AuditProfileEditorPage() {
             <Label htmlFor="profile-name">Nombre del perfil</Label>
             <Input
               id="profile-name"
-              placeholder="Ej: Auditoria completa, Solo SEO..."
+              placeholder="Ej: Auditoría completa, Solo SEO..."
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
@@ -449,7 +449,7 @@ export default function AuditProfileEditorPage() {
                 <div className="border-t border-zinc-100 pt-3 mt-3">
                   <div className="flex items-center justify-between mb-1">
                     <Label className="text-xs text-zinc-500">
-                      Peso en puntuacion
+                      Peso en puntuación
                     </Label>
                     <span className="text-xs font-medium text-zinc-700">
                       {weight}%

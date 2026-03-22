@@ -132,12 +132,12 @@ export default function VideoGeneratorPage() {
     // Simulate research (would call Gemini API via server action in production)
     await new Promise((r) => setTimeout(r, 2000));
     setResearchResult({
-      title: "Resultado de investigacion",
+      title: "Resultado de investigación",
       description:
-        "Analisis del producto/servicio encontrado en la URL proporcionada. Se han identificado los puntos clave para la generacion de guiones de video.",
+        "Análisis del producto/servicio encontrado en la URL proporcionada. Se han identificado los puntos clave para la generación de guiones de vídeo.",
       keyPoints: [
         "Propuesta de valor principal identificada",
-        "Publico objetivo definido",
+        "Público objetivo definido",
         "Diferenciadores competitivos encontrados",
         "Casos de uso principales detectados",
       ],
@@ -152,19 +152,19 @@ export default function VideoGeneratorPage() {
     const generated: Script[] = [
       {
         id: "s1",
-        text: "¿Sabias que el 80% de las empresas pierden clientes por no tener presencia digital? Descubre como nuestra solucion puede ayudarte a captar mas leads y convertirlos en clientes fieles. Agenda una demo gratuita hoy.",
+        text: "¿Sabías que el 80% de las empresas pierden clientes por no tener presencia digital? Descubre cómo nuestra solución puede ayudarte a captar más leads y convertirlos en clientes fieles. Agenda una demo gratuita hoy.",
         language,
         selected: false,
       },
       {
         id: "s2",
-        text: "Imagina poder automatizar tu captacion de clientes mientras te enfocas en lo que realmente importa: hacer crecer tu negocio. Con nuestra plataforma, eso es posible. Pruebala gratis durante 14 dias.",
+        text: "Imagina poder automatizar tu captación de clientes mientras te enfocas en lo que realmente importa: hacer crecer tu negocio. Con nuestra plataforma, eso es posible. Pruébala gratis durante 14 días.",
         language,
         selected: false,
       },
       {
         id: "s3",
-        text: "Cansado de perder tiempo buscando clientes manualmente? Nuestra herramienta de IA encuentra, contacta y cualifica leads por ti. Resultados desde la primera semana. ¿Hablamos?",
+        text: "¿Cansado de perder tiempo buscando clientes manualmente? Nuestra herramienta de IA encuentra, contacta y cualifica leads por ti. Resultados desde la primera semana. ¿Hablamos?",
         language,
         selected: false,
       },
@@ -336,7 +336,7 @@ export default function VideoGeneratorPage() {
                 </div>
                 <div>
                   <h4 className="text-sm font-medium text-zinc-700 mb-1">
-                    Publico objetivo:
+                    Público objetivo:
                   </h4>
                   <p className="text-sm text-zinc-600">
                     {researchResult.targetAudience}
@@ -595,11 +595,11 @@ export default function VideoGeneratorPage() {
             <div className="rounded-lg border border-zinc-200 p-4">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-sm font-medium text-zinc-900">
-                  Estimacion de coste
+                  Estimación de coste
                 </h3>
                 <div className="flex items-center gap-2">
                   <Label htmlFor="mode-toggle" className="text-sm text-zinc-600">
-                    Economico
+                    Económico
                   </Label>
                   <Switch
                     id="mode-toggle"

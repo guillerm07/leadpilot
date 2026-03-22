@@ -205,7 +205,7 @@ export function InboxView({ conversations, activeFilters }: InboxViewProps) {
             No hay respuestas
           </h3>
           <p className="mt-1 text-sm text-muted-foreground text-center max-w-sm">
-            Las respuestas de tus leads apareceran aqui cuando respondan a tus
+            Las respuestas de tus leads aparecerán aquí cuando respondan a tus
             secuencias de contacto.
           </p>
         </CardContent>

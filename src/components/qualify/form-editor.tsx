@@ -44,9 +44,9 @@ const QUESTION_TYPE_LABELS: Record<QuestionType, string> = {
   text: "Texto libre",
   select: "Selector",
   radio: "Opciones (radio)",
-  number: "Numero",
+  number: "Número",
   email: "Email",
-  phone: "Telefono",
+  phone: "Teléfono",
 };
 
 type StepData = {
@@ -363,7 +363,7 @@ export function FormEditor({
             <div className="mx-auto max-w-lg space-y-6">
               {localSteps.length === 0 ? (
                 <p className="text-center text-sm text-muted-foreground">
-                  Anade al menos un paso para ver la vista previa
+                  Añade al menos un paso para ver la vista previa
                 </p>
               ) : (
                 localSteps.map((step, index) => (
@@ -407,7 +407,7 @@ export function FormEditor({
                         {(step.options ?? []).map((opt, oi) => (
                           <label key={oi} className="flex items-center gap-2 text-sm">
                             <input type="radio" name={`preview-${index}`} disabled />
-                            {opt || "(vacio)"}
+                            {opt || "(vacío)"}
                           </label>
                         ))}
                       </div>
@@ -436,7 +436,7 @@ export function FormEditor({
       {/* Form settings */}
       <Card>
         <CardHeader>
-          <CardTitle>Configuracion del formulario</CardTitle>
+          <CardTitle>Configuración del formulario</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
@@ -444,7 +444,7 @@ export function FormEditor({
               <Label htmlFor="form-name">Nombre</Label>
               <Input
                 id="form-name"
-                placeholder="Ej: Cualificacion Google Ads"
+                placeholder="Ej: Cualificación Google Ads"
                 value={name}
                 onChange={(e) =>
                   handleNameChange((e.target as HTMLInputElement).value)
@@ -455,7 +455,7 @@ export function FormEditor({
               <Label htmlFor="form-slug">Slug (URL)</Label>
               <Input
                 id="form-slug"
-                placeholder="cualificacion-google-ads"
+                placeholder="cualificación-google-ads"
                 value={slug}
                 onChange={(e) =>
                   setSlug((e.target as HTMLInputElement).value)
@@ -463,7 +463,7 @@ export function FormEditor({
               />
               {publicUrl && (
                 <p className="text-xs text-muted-foreground">
-                  URL publica:{" "}
+                  URL pública:{" "}
                   <code className="rounded bg-zinc-100 px-1 py-0.5">
                     {publicUrl}
                   </code>
@@ -487,7 +487,7 @@ export function FormEditor({
               }
             />
             <p className="text-xs text-muted-foreground">
-              Slug del evento en Cal.com. Los leads cualificados veran el
+              Slug del evento en Cal.com. Los leads cualificados verán el
               widget de reserva.
             </p>
           </div>
@@ -516,7 +516,7 @@ export function FormEditor({
               </Button>
               <Button size="sm" onClick={addStep}>
                 <Plus className="size-3.5" data-icon="inline-start" />
-                Anadir paso
+                Añadir paso
               </Button>
             </div>
           </div>
@@ -525,7 +525,7 @@ export function FormEditor({
           {localSteps.length === 0 ? (
             <div className="py-8 text-center">
               <p className="text-sm text-muted-foreground">
-                No hay pasos todavia. Haz clic en &quot;Anadir paso&quot; para
+                No hay pasos todavía. Haz clic en &quot;Añadir paso&quot; para
                 crear la primera pregunta.
               </p>
             </div>
@@ -563,7 +563,7 @@ export function FormEditor({
               className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
             >
               <ExternalLink className="size-3.5" />
-              Ver formulario publico
+              Ver formulario público
             </a>
           )}
         </div>
@@ -671,7 +671,7 @@ function StepCard({
               {(step.options ?? []).map((opt, oi) => (
                 <div key={oi} className="flex items-center gap-2">
                   <Input
-                    placeholder={`Opcion ${oi + 1}`}
+                    placeholder={`Opción ${oi + 1}`}
                     value={opt}
                     onChange={(e) =>
                       onUpdateOption(
@@ -692,7 +692,7 @@ function StepCard({
               ))}
               <Button variant="outline" size="xs" onClick={onAddOption}>
                 <Plus className="size-3" data-icon="inline-start" />
-                Anadir opcion
+                Añadir opción
               </Button>
             </div>
           )}
@@ -701,7 +701,7 @@ function StepCard({
           {needsOptions && (step.options ?? []).filter(Boolean).length > 0 && (
             <div className="space-y-2">
               <Label className="text-xs text-muted-foreground">
-                Reglas de cualificacion
+                Reglas de cualificación
               </Label>
               <p className="text-xs text-muted-foreground">
                 Selecciona las respuestas que cualifican al lead:

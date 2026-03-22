@@ -106,7 +106,7 @@ export function Header({ userEmail }: { userEmail?: string }) {
               onClick={() => router.push("/settings")}
             >
               <User className="size-4" />
-              Configuracion
+              Configuración
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
@@ -114,7 +114,7 @@ export function Header({ userEmail }: { userEmail?: string }) {
               onClick={handleLogout}
             >
               <LogOut className="size-4" />
-              Cerrar sesion
+              Cerrar sesión
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

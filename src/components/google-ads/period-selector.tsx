@@ -5,9 +5,9 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const periods = [
-  { label: "7 dias", value: "7d" },
-  { label: "30 dias", value: "30d" },
-  { label: "90 dias", value: "90d" },
+  { label: "7 días", value: "7d" },
+  { label: "30 días", value: "30d" },
+  { label: "90 días", value: "90d" },
 ] as const;
 
 export function PeriodSelector() {

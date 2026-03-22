@@ -163,21 +163,21 @@ Responde SOLO en formato JSON con esta estructura exacta:
       generatedSubject = `Impulsa la presencia digital de ${sampleLead.empresa}`;
       generatedBody = `Hola,
 
-He estado investigando ${sampleLead.empresa} y me ha llamado la atencion su ${sampleLead.rating} de valoracion en Google con excelentes resenas de sus clientes.
+He estado investigando ${sampleLead.empresa} y me ha llamado la atención su ${sampleLead.rating} de valoración en Google con excelentes reseñas de sus clientes.
 
 ${sampleLead.resumen_ia}
 
-En nuestra agencia ayudamos a negocios como el suyo en ${sampleLead.categoria} a aumentar su visibilidad online y atraer mas clientes.
+En nuestra agencia ayudamos a negocios como el suyo en ${sampleLead.categoria} a aumentar su visibilidad online y atraer más clientes.
 
-Me encantaria compartirle algunas ideas especificas para ${sampleLead.empresa}. Tiene 15 minutos esta semana para una llamada rapida?
+Me encantaría compartirle algunas ideas específicas para ${sampleLead.empresa}. Tiene 15 minutos esta semana para una llamada rápida?
 
 Un saludo`;
     } else {
-      generatedBody = `Hola! He visto ${sampleLead.empresa} y me han encantado sus resenas (${sampleLead.rating} en Google).
+      generatedBody = `Hola! He visto ${sampleLead.empresa} y me han encantado sus reseñas (${sampleLead.rating} en Google).
 
 ${sampleLead.resumen_ia}
 
-Trabajo en una agencia de marketing digital y tengo algunas ideas que podrian ayudarles a atraer mas clientes. Le interesaria saber mas?`;
+Trabajo en una agencia de marketing digital y tengo algunas ideas que podrían ayudarles a atraer más clientes. Le interesaría saber más?`;
     }
 
     return {

@@ -100,10 +100,10 @@ const CONDITION_COLORS: Record<StepCondition, string> = {
 const DAYS_OF_WEEK = [
   { key: "mon", label: "Lun" },
   { key: "tue", label: "Mar" },
-  { key: "wed", label: "Mie" },
+  { key: "wed", label: "Mié" },
   { key: "thu", label: "Jue" },
   { key: "fri", label: "Vie" },
-  { key: "sat", label: "Sab" },
+  { key: "sat", label: "Sáb" },
   { key: "sun", label: "Dom" },
 ] as const;
 
@@ -308,7 +308,7 @@ export function SequenceEditor({
                 <Mail className="size-6 text-zinc-400" />
               </div>
               <p className="mt-3 text-sm text-muted-foreground text-center">
-                No hay pasos en esta secuencia. Anade el primer paso para
+                No hay pasos en esta secuencia. Añade el primer paso para
                 comenzar.
               </p>
             </CardContent>
@@ -331,7 +331,7 @@ export function SequenceEditor({
                           <span className="text-xs font-medium text-zinc-500">
                             Esperar{" "}
                             {step.delayDays > 0 &&
-                              `${step.delayDays} ${step.delayDays === 1 ? "dia" : "dias"}`}
+                              `${step.delayDays} ${step.delayDays === 1 ? "día" : "días"}`}
                             {step.delayDays > 0 && step.delayHours > 0 && ", "}
                             {step.delayHours > 0 &&
                               `${step.delayHours} ${step.delayHours === 1 ? "hora" : "horas"}`}
@@ -409,7 +409,7 @@ export function SequenceEditor({
                             {index === 0 && (
                               <p className="text-xs text-muted-foreground">
                                 {step.delayDays === 0 && step.delayHours === 0
-                                  ? "Envio inmediato al agregar lead"
+                                  ? "Envío inmediato al agregar lead"
                                   : `Esperar ${step.delayDays > 0 ? `${step.delayDays}d` : ""}${step.delayHours > 0 ? ` ${step.delayHours}h` : ""} tras agregar lead`}
                               </p>
                             )}
@@ -470,12 +470,12 @@ export function SequenceEditor({
               }
             >
               <Plus className="size-4" />
-              Anadir paso
+              Añadir paso
             </DialogTrigger>
 
             <DialogContent className="sm:max-w-md">
               <DialogHeader>
-                <DialogTitle>Anadir paso a la secuencia</DialogTitle>
+                <DialogTitle>Añadir paso a la secuencia</DialogTitle>
                 <DialogDescription>
                   Configura el canal, plantilla y condiciones del nuevo paso.
                 </DialogDescription>
@@ -542,7 +542,7 @@ export function SequenceEditor({
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <Label className="text-xs text-muted-foreground">
-                        Dias
+                        Días
                       </Label>
                       <Input
                         type="number"
@@ -573,7 +573,7 @@ export function SequenceEditor({
 
                 {/* Condition */}
                 <div className="space-y-2">
-                  <Label>Condicion de envio</Label>
+                  <Label>Condición de envío</Label>
                   <Select
                     value={newStepCondition}
                     onValueChange={(v) => {
@@ -601,7 +601,7 @@ export function SequenceEditor({
                   Cancelar
                 </DialogClose>
                 <Button onClick={handleAddStep} disabled={isPending}>
-                  {isPending ? "Anadiendo..." : "Anadir paso"}
+                  {isPending ? "Añadiendo..." : "Añadir paso"}
                 </Button>
               </DialogFooter>
             </DialogContent>
@@ -615,14 +615,14 @@ export function SequenceEditor({
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-sm">
               <Settings className="size-4" />
-              Configuracion de envio
+              Configuración de envío
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-5">
             {/* Send days */}
             <div className="space-y-2">
               <Label className="text-xs uppercase tracking-wide text-muted-foreground">
-                Dias de envio
+                Días de envío
               </Label>
               <div className="flex flex-wrap gap-1.5">
                 {DAYS_OF_WEEK.map(({ key, label }) => (
@@ -649,7 +649,7 @@ export function SequenceEditor({
             {/* Daily limit */}
             <div className="space-y-2">
               <Label className="text-xs uppercase tracking-wide text-muted-foreground">
-                Limite diario
+                Límite diario
               </Label>
               <Input
                 type="number"
@@ -660,7 +660,7 @@ export function SequenceEditor({
                 placeholder="50"
               />
               <p className="text-xs text-muted-foreground">
-                Maximo de mensajes por dia
+                Máximo de mensajes por día
               </p>
             </div>
 
@@ -712,9 +712,9 @@ export function SequenceEditor({
                 <dd className="font-medium tabular-nums">{steps.length}</dd>
               </div>
               <div className="flex justify-between">
-                <dt className="text-muted-foreground">Duracion total</dt>
+                <dt className="text-muted-foreground">Duración total</dt>
                 <dd className="font-medium tabular-nums">
-                  {steps.reduce((acc, s) => acc + s.delayDays, 0)} dias
+                  {steps.reduce((acc, s) => acc + s.delayDays, 0)} días
                 </dd>
               </div>
               <div className="flex justify-between">

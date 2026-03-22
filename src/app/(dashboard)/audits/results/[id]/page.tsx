@@ -60,7 +60,7 @@ type AuditIssue = {
 
 const SEVERITY_CONFIG = {
   critical: {
-    label: "Critico",
+    label: "Crítico",
     icon: AlertTriangle,
     className: "bg-red-50 text-red-700 border-red-200",
     dotColor: "bg-red-500",
@@ -122,8 +122,8 @@ function generateDemoResult(url: string): AuditResultRow {
     {
       category: "legal",
       severity: "critical",
-      message: "No se encontro pagina de aviso legal",
-      details: "Es obligatorio tener un aviso legal accesible segun la LSSI.",
+      message: "No se encontró página de aviso legal",
+      details: "Es obligatorio tener un aviso legal accesible según la LSSI.",
     },
     {
       category: "cookies",
@@ -135,38 +135,38 @@ function generateDemoResult(url: string): AuditResultRow {
     {
       category: "gdpr",
       severity: "warning",
-      message: "Formularios sin checkbox de consentimiento explicito",
-      details: "El formulario de contacto no incluye checkbox de aceptacion de politica de privacidad.",
+      message: "Formularios sin checkbox de consentimiento explícito",
+      details: "El formulario de contacto no incluye checkbox de aceptación de política de privacidad.",
     },
     {
       category: "seo",
       severity: "warning",
-      message: "Meta description ausente en 3 paginas",
+      message: "Meta description ausente en 3 páginas",
       details: "/servicios, /contacto y /nosotros no tienen meta description.",
     },
     {
       category: "ssl",
       severity: "info",
-      message: "Certificado SSL valido, expira en 23 dias",
+      message: "Certificado SSL válido, expira en 23 días",
       details: "Renovar antes del 15 de abril para evitar interrupciones.",
     },
     {
       category: "accessibility",
       severity: "warning",
-      message: "12 imagenes sin texto alternativo",
-      details: "Se encontraron imagenes decorativas y de contenido sin atributo alt.",
+      message: "12 imágenes sin texto alternativo",
+      details: "Se encontraron imágenes decorativas y de contenido sin atributo alt.",
     },
     {
       category: "seo",
       severity: "info",
-      message: "No se encontro schema markup JSON-LD",
-      details: "Anadir datos estructurados mejoraria la visibilidad en buscadores.",
+      message: "No se encontró schema markup JSON-LD",
+      details: "Añadir datos estructurados mejoraría la visibilidad en buscadores.",
     },
   ];
 
   const outreachVariables: Record<string, string> = {
     "{{audit_score}}": `${overallScore}/100`,
-    "{{missing_legal_pages}}": "Aviso legal, Politica de cookies",
+    "{{missing_legal_pages}}": "Aviso legal, Política de cookies",
     "{{critical_issues_count}}": `${issues.filter((i) => i.severity === "critical").length}`,
     "{{seo_score}}": `${scores.seo}/100`,
     "{{top_issue}}": issues[0]?.message ?? "N/A",
@@ -241,7 +241,7 @@ export default function AuditResultsPage() {
       <div className="flex h-full items-center justify-center">
         <div className="text-center">
           <h2 className="text-lg font-semibold text-zinc-900">
-            Auditoria no encontrada
+            Auditoría no encontrada
           </h2>
           <Button
             variant="outline"
@@ -262,10 +262,10 @@ export default function AuditResultsPage() {
       <div className="flex h-full items-center justify-center">
         <div className="text-center">
           <h2 className="text-lg font-semibold text-zinc-900">
-            Sin resultados aun
+            Sin resultados aún
           </h2>
           <p className="mt-1 text-sm text-zinc-500">
-            La auditoria esta en progreso.
+            La auditoría está en progreso.
           </p>
           <Button
             variant="outline"
@@ -304,7 +304,7 @@ export default function AuditResultsPage() {
         </Button>
         <div className="flex-1">
           <h1 className="text-2xl font-bold tracking-tight text-zinc-900">
-            Resultados de Auditoria
+            Resultados de Auditoría
           </h1>
           <p className="text-sm text-zinc-500">
             {results.length} URLs auditadas
@@ -342,7 +342,7 @@ export default function AuditResultsPage() {
           >
             <CardContent className="p-6 text-center">
               <p className="text-sm font-medium text-zinc-500 mb-1">
-                Puntuacion global
+                Puntuación global
               </p>
               <p
                 className={`text-5xl font-bold ${getScoreColor(
@@ -359,7 +359,7 @@ export default function AuditResultsPage() {
           <Card>
             <CardHeader>
               <CardTitle className="text-base">
-                Puntuacion por categoria
+                Puntuación por categoría
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -376,7 +376,7 @@ export default function AuditResultsPage() {
                     tick={{ fontSize: 10, fill: "#a1a1aa" }}
                   />
                   <Radar
-                    name="Puntuacion"
+                    name="Puntuación"
                     dataKey="score"
                     stroke="#18181b"
                     fill="#18181b"
@@ -418,7 +418,7 @@ export default function AuditResultsPage() {
                       {criticalCount}
                     </span>
                   </div>
-                  <p className="text-xs text-zinc-500">Criticos</p>
+                  <p className="text-xs text-zinc-500">Críticos</p>
                 </div>
                 <div>
                   <div className="flex items-center justify-center gap-1">

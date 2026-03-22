@@ -80,11 +80,11 @@ export default async function GoogleAdsPage({
               Conecta tu cuenta de Google Ads para empezar
             </h2>
             <p className="text-sm text-zinc-500 max-w-md">
-              Vincula tu cuenta de Google Ads para ver metricas, gestionar campanas
+              Vincula tu cuenta de Google Ads para ver métricas, gestionar campañas
               y optimizar tu rendimiento publicitario.
             </p>
             <Link href="/settings">
-              <Button>Configurar conexion</Button>
+              <Button>Configurar conexión</Button>
             </Link>
           </div>
         </div>

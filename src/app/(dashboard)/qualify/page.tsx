@@ -61,7 +61,7 @@ export default async function QualifyPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-zinc-900">
-            Formularios de cualificacion
+            Formularios de cualificación
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Crea formularios multi-paso para cualificar leads y agendar
@@ -87,8 +87,8 @@ export default async function QualifyPage() {
               No hay formularios
             </h3>
             <p className="mt-1 max-w-sm text-center text-sm text-muted-foreground">
-              Crea tu primer formulario de cualificacion para filtrar leads y
-              agendar reuniones automaticamente con Cal.com.
+              Crea tu primer formulario de cualificación para filtrar leads y
+              agendar reuniones automáticamente con Cal.com.
             </p>
             <Link href="/qualify/new/edit" className="mt-4">
               <Button>
@@ -107,7 +107,7 @@ export default async function QualifyPage() {
                 <TableHead>Slug / URL</TableHead>
                 <TableHead className="text-center">Submissions</TableHead>
                 <TableHead className="text-center">
-                  Tasa cualificacion
+                  Tasa cualificación
                 </TableHead>
                 <TableHead>Estado</TableHead>
                 <TableHead>Creado</TableHead>

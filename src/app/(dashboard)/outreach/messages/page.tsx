@@ -302,7 +302,7 @@ export default async function MessagesPage({
               No hay mensajes
             </h3>
             <p className="mt-1 text-sm text-muted-foreground text-center max-w-sm">
-              Los mensajes enviados desde tus secuencias apareceran aqui.
+              Los mensajes enviados desde tus secuencias aparecerán aquí.
             </p>
           </CardContent>
         </Card>

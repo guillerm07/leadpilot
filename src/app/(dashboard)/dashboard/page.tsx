@@ -1,7 +1,8 @@
 import { cookies } from "next/headers";
 import { eq, and, gte, count, sql, desc } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { leads, outreachMessages, outreachReplies } from "@/lib/db/schema";
+import { leads, outreachMessages, outreachReplies, clients, workspaces } from "@/lib/db/schema";
+import { requireAuth } from "@/lib/auth/helpers";
 import {
   getDashboardMetrics,
   getRecentReplies,
@@ -17,7 +18,32 @@ import {
 
 export default async function DashboardPage() {
   const cookieStore = await cookies();
-  const activeClientId = cookieStore.get("active_client_id")?.value;
+  let activeClientId = cookieStore.get("active_client_id")?.value;
+
+  // If no client selected via cookie, try to pick the first client from the workspace
+  if (!activeClientId) {
+    const session = await requireAuth();
+    const workspace = await db.query.workspaces.findFirst({
+      where: eq(workspaces.ownerUserId, session.user.id),
+    });
+
+    if (workspace) {
+      const [firstClient] = await db
+        .select({ id: clients.id })
+        .from(clients)
+        .where(eq(clients.workspaceId, workspace.id))
+        .limit(1);
+
+      if (firstClient) {
+        activeClientId = firstClient.id;
+        // Set the cookie server-side so subsequent requests have it
+        cookieStore.set("active_client_id", activeClientId, {
+          path: "/",
+          maxAge: 31536000,
+        });
+      }
+    }
+  }
 
   if (!activeClientId) {
     return (
@@ -34,38 +60,78 @@ export default async function DashboardPage() {
     );
   }
 
-  // Fetch all dashboard data in parallel
-  const [rawMetrics, rawReplies, rawTimeline] = await Promise.all([
-    getDashboardMetrics(activeClientId),
-    getRecentReplies(activeClientId, 5),
-    getActivityTimeline(activeClientId, 30),
-  ]);
+  // Fetch all dashboard data in parallel, handling potential errors gracefully
+  let rawMetrics = {
+    leadCount: 0,
+    leadsThisWeek: 0,
+    messagesSent: 0,
+    deliveryRate: 0,
+    openRate: 0,
+    replyRate: 0,
+    repliesCount: 0,
+  };
+  let rawReplies: Awaited<ReturnType<typeof getRecentReplies>> = [];
+  let rawTimeline = {
+    leadsCreated: [] as Record<string, unknown>[],
+    messagesSent: [] as Record<string, unknown>[],
+    repliesReceived: [] as Record<string, unknown>[],
+  };
+
+  try {
+    const [m, r, t] = await Promise.all([
+      getDashboardMetrics(activeClientId),
+      getRecentReplies(activeClientId, 5),
+      getActivityTimeline(activeClientId, 30),
+    ]);
+    rawMetrics = m;
+    rawReplies = r;
+    rawTimeline = t;
+  } catch (error) {
+    console.error("Error fetching dashboard data:", error);
+  }
 
   // Unread replies count
-  const [unreadResult] = await db
-    .select({ count: count() })
-    .from(outreachReplies)
-    .innerJoin(leads, eq(outreachReplies.leadId, leads.id))
-    .where(
-      and(
-        eq(leads.clientId, activeClientId),
-        eq(outreachReplies.isRead, false)
-      )
-    );
+  let unreadCount = 0;
+  try {
+    const [unreadResult] = await db
+      .select({ count: count() })
+      .from(outreachReplies)
+      .innerJoin(leads, eq(outreachReplies.leadId, leads.id))
+      .where(
+        and(
+          eq(leads.clientId, activeClientId),
+          eq(outreachReplies.isRead, false)
+        )
+      );
+    unreadCount = unreadResult?.count ?? 0;
+  } catch (error) {
+    console.error("Error fetching unread replies:", error);
+  }
 
   // Qualified leads count
-  const [qualifiedResult] = await db
-    .select({ count: count() })
-    .from(leads)
-    .where(
-      and(
-        eq(leads.clientId, activeClientId),
-        eq(leads.status, "qualified")
-      )
-    );
+  let qualifiedCount = 0;
+  try {
+    const [qualifiedResult] = await db
+      .select({ count: count() })
+      .from(leads)
+      .where(
+        and(
+          eq(leads.clientId, activeClientId),
+          eq(leads.status, "qualified")
+        )
+      );
+    qualifiedCount = qualifiedResult?.count ?? 0;
+  } catch (error) {
+    console.error("Error fetching qualified leads:", error);
+  }
 
   // Build suggested actions
-  const suggestedActions = await buildSuggestedActions(activeClientId);
+  let suggestedActions: SuggestedAction[] = [];
+  try {
+    suggestedActions = await buildSuggestedActions(activeClientId);
+  } catch (error) {
+    console.error("Error building suggested actions:", error);
+  }
 
   // Assemble metrics
   const metrics: DashboardMetrics = {
@@ -76,8 +142,8 @@ export default async function DashboardPage() {
     openRate: rawMetrics.openRate,
     replyRate: rawMetrics.replyRate,
     repliesCount: rawMetrics.repliesCount,
-    unreadReplies: unreadResult.count,
-    qualifiedLeads: qualifiedResult.count,
+    unreadReplies: unreadCount,
+    qualifiedLeads: qualifiedCount,
   };
 
   // Transform activity timeline into chart data
@@ -88,9 +154,9 @@ export default async function DashboardPage() {
     id: r.reply.id,
     leadId: r.lead.id,
     leadName: r.lead.companyName,
-    preview: r.reply.body.length > 80 ? r.reply.body.slice(0, 80) + "..." : r.reply.body,
+    preview: (r.reply.body ?? "").length > 80 ? r.reply.body.slice(0, 80) + "..." : (r.reply.body ?? ""),
     sentiment: r.reply.sentiment,
-    receivedAt: r.reply.receivedAt.toISOString(),
+    receivedAt: r.reply.receivedAt?.toISOString() ?? new Date().toISOString(),
     isRead: r.reply.isRead,
   }));
 

@@ -188,7 +188,7 @@ export default function AuditRunPage() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold tracking-tight text-zinc-900">
-          Lanzar Auditoria
+          Lanzar Auditoría
         </h1>
         <p className="text-sm text-zinc-500">
           Audita sitios web de tus leads para encontrar problemas y oportunidades
@@ -200,12 +200,12 @@ export default function AuditRunPage() {
         <div className="lg:col-span-2 space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Configuracion</CardTitle>
+              <CardTitle className="text-base">Configuración</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {/* Profile selector */}
               <div className="space-y-2">
-                <Label>Perfil de auditoria</Label>
+                <Label>Perfil de auditoría</Label>
                 <Select
                   value={selectedProfileId}
                   onValueChange={(v) => setSelectedProfileId(v ?? "")}
@@ -251,7 +251,7 @@ export default function AuditRunPage() {
               {!useLeadUrls ? (
                 <div className="space-y-2">
                   <Label htmlFor="urls-input">
-                    URLs a auditar (una por linea)
+                    URLs a auditar (una por línea)
                   </Label>
                   <Textarea
                     id="urls-input"
@@ -261,7 +261,7 @@ export default function AuditRunPage() {
                     rows={6}
                   />
                   <p className="text-xs text-zinc-500">
-                    {urls.length} URLs validas detectadas
+                    {urls.length} URLs válidas detectadas
                   </p>
                 </div>
               ) : (
@@ -287,7 +287,7 @@ export default function AuditRunPage() {
                     ))}
                     {leadsWithWeb.length > 10 && (
                       <p className="text-xs text-zinc-400 pt-1">
-                        ...y {leadsWithWeb.length - 10} mas
+                        ...y {leadsWithWeb.length - 10} más
                       </p>
                     )}
                   </div>
@@ -301,7 +301,7 @@ export default function AuditRunPage() {
         <div className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Estimacion</CardTitle>
+              <CardTitle className="text-base">Estimación</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex justify-between text-sm">
@@ -334,7 +334,7 @@ export default function AuditRunPage() {
                 ) : (
                   <Play className="size-4" />
                 )}
-                Lanzar auditoria
+                Lanzar auditoría
               </Button>
             </CardContent>
           </Card>

@@ -578,7 +578,7 @@ function FormShell({ children }: { children: React.ReactNode }) {
         </div>
         <p className="mt-6 text-center text-xs text-zinc-400">
           Tus datos son confidenciales y se tratan de acuerdo con nuestra
-          politica de privacidad.
+          política de privacidad.
         </p>
       </div>
     </div>
