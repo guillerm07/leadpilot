@@ -1,6 +1,6 @@
 "use client";
 
-import { useTransition, useState } from "react";
+import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { toast } from "sonner";
 import { updateComplianceAction } from "@/app/(dashboard)/clients/actions";
 
 const complianceFormSchema = z.object({
@@ -49,8 +50,6 @@ export function ClientComplianceForm({
   compliance,
 }: ClientComplianceFormProps) {
   const [isPending, startTransition] = useTransition();
-  const [successMessage, setSuccessMessage] = useState(false);
-  const [serverError, setServerError] = useState<string | null>(null);
   const router = useRouter();
 
   const {
@@ -70,8 +69,6 @@ export function ClientComplianceForm({
   });
 
   function onSubmit(data: ComplianceFormData) {
-    setServerError(null);
-    setSuccessMessage(false);
     startTransition(async () => {
       try {
         await updateComplianceAction({
@@ -82,14 +79,13 @@ export function ClientComplianceForm({
           privacyPolicyUrl: data.privacyPolicyUrl || undefined,
           dpoContactEmail: data.dpoContactEmail || undefined,
         });
-        setSuccessMessage(true);
+        toast.success("Guardado correctamente");
         router.refresh();
-        setTimeout(() => setSuccessMessage(false), 3000);
       } catch (error) {
-        setServerError(
+        toast.error(
           error instanceof Error
             ? error.message
-            : "Error al actualizar compliance"
+            : "Error al guardar"
         );
       }
     });
@@ -97,17 +93,6 @@ export function ClientComplianceForm({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      {serverError && (
-        <div className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">
-          {serverError}
-        </div>
-      )}
-      {successMessage && (
-        <div className="rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400">
-          Compliance actualizado correctamente.
-        </div>
-      )}
-
       {/* Lista Robinson */}
       <div className="flex items-center justify-between rounded-lg border p-4">
         <div className="space-y-0.5">

@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import Link from "next/link";
 import {
   Card,
@@ -111,14 +112,24 @@ export function LeadDetailInfo({ lead }: LeadDetailInfoProps) {
 
   async function handleStatusChange(status: string) {
     startTransition(async () => {
-      await updateLeadStatusAction(lead.id, status);
+      try {
+        await updateLeadStatusAction(lead.id, status);
+        toast.success("Estado actualizado");
+      } catch {
+        toast.error("Error al cambiar el estado");
+      }
     });
   }
 
   async function handleSaveNotes() {
     startTransition(async () => {
-      await updateLeadNotesAction(lead.id, notes);
-      setNotesSaved(true);
+      try {
+        await updateLeadNotesAction(lead.id, notes);
+        setNotesSaved(true);
+        toast.success("Notas guardadas");
+      } catch {
+        toast.error("Error al guardar las notas");
+      }
     });
   }
 

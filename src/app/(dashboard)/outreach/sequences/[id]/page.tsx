@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowLeft, Mail, MessageCircle, Shuffle } from "lucide-react";
 import { SequenceEditor } from "@/components/outreach/sequence-editor";
+import { NewSequenceForm } from "@/components/outreach/new-sequence-form";
 import type { SequenceStatus, OutreachChannel } from "@/types";
 
 const STATUS_CONFIG: Record<
@@ -43,6 +44,32 @@ export default async function SequenceDetailPage({
 
   if (!clientId) {
     redirect("/");
+  }
+
+  // Handle "new" — show blank creation form instead of fetching from DB
+  if (id === "new") {
+    return (
+      <div className="space-y-6">
+        <Link
+          href="/outreach/sequences"
+          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+        >
+          <ArrowLeft className="size-3.5" />
+          Volver a secuencias
+        </Link>
+
+        <div>
+          <h1 className="text-2xl font-semibold text-zinc-900">
+            Nueva secuencia
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Configura el nombre y canal de tu nueva secuencia de contacto
+          </p>
+        </div>
+
+        <NewSequenceForm />
+      </div>
+    );
   }
 
   const sequence = await getSequenceById(id);

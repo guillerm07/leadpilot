@@ -1,6 +1,6 @@
 "use client";
 
-import { useTransition, useState } from "react";
+import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -8,6 +8,7 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
 import { updateClientAction } from "@/app/(dashboard)/clients/actions";
 
 const brandFormSchema = z.object({
@@ -27,8 +28,6 @@ interface ClientBrandFormProps {
 
 export function ClientBrandForm({ client }: ClientBrandFormProps) {
   const [isPending, startTransition] = useTransition();
-  const [successMessage, setSuccessMessage] = useState(false);
-  const [serverError, setServerError] = useState<string | null>(null);
   const router = useRouter();
 
   const {
@@ -44,8 +43,6 @@ export function ClientBrandForm({ client }: ClientBrandFormProps) {
   });
 
   function onSubmit(data: BrandFormData) {
-    setServerError(null);
-    setSuccessMessage(false);
     startTransition(async () => {
       try {
         await updateClientAction({
@@ -53,14 +50,13 @@ export function ClientBrandForm({ client }: ClientBrandFormProps) {
           brandDescription: data.brandDescription || undefined,
           brandVoice: data.brandVoice || undefined,
         });
-        setSuccessMessage(true);
+        toast.success("Guardado correctamente");
         router.refresh();
-        setTimeout(() => setSuccessMessage(false), 3000);
       } catch (error) {
-        setServerError(
+        toast.error(
           error instanceof Error
             ? error.message
-            : "Error al actualizar la marca"
+            : "Error al guardar"
         );
       }
     });
@@ -68,17 +64,6 @@ export function ClientBrandForm({ client }: ClientBrandFormProps) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      {serverError && (
-        <div className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">
-          {serverError}
-        </div>
-      )}
-      {successMessage && (
-        <div className="rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400">
-          Marca actualizada correctamente.
-        </div>
-      )}
-
       <div className="space-y-1.5">
         <Label htmlFor="brand-description">Descripción de marca</Label>
         <p className="text-xs text-muted-foreground">

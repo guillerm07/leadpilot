@@ -1,6 +1,6 @@
 "use client";
 
-import { useTransition, useState } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,6 +9,7 @@ import { Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 import { updateClientIntegrationsAction } from "@/app/(dashboard)/clients/actions";
 
 const integrationsFormSchema = z.object({
@@ -91,8 +92,6 @@ export function ClientIntegrationsForm({
   client,
 }: ClientIntegrationsFormProps) {
   const [isPending, startTransition] = useTransition();
-  const [successMessage, setSuccessMessage] = useState(false);
-  const [serverError, setServerError] = useState<string | null>(null);
   const router = useRouter();
 
   const {
@@ -110,8 +109,6 @@ export function ClientIntegrationsForm({
   });
 
   function onSubmit(data: IntegrationsFormData) {
-    setServerError(null);
-    setSuccessMessage(false);
     startTransition(async () => {
       try {
         await updateClientIntegrationsAction({
@@ -121,14 +118,13 @@ export function ClientIntegrationsForm({
           brevoSenderEmail: data.brevoSenderEmail || undefined,
           brevoSenderName: data.brevoSenderName || undefined,
         });
-        setSuccessMessage(true);
+        toast.success("Guardado correctamente");
         router.refresh();
-        setTimeout(() => setSuccessMessage(false), 3000);
       } catch (error) {
-        setServerError(
+        toast.error(
           error instanceof Error
             ? error.message
-            : "Error al actualizar las integraciones"
+            : "Error al guardar"
         );
       }
     });
@@ -136,17 +132,6 @@ export function ClientIntegrationsForm({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      {serverError && (
-        <div className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">
-          {serverError}
-        </div>
-      )}
-      {successMessage && (
-        <div className="rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400">
-          Integraciones actualizadas correctamente.
-        </div>
-      )}
-
       {/* Instantly */}
       <div className="space-y-3">
         <h4 className="text-sm font-medium">Instantly.ai</h4>

@@ -202,8 +202,8 @@ export function CreateClientDialog() {
             <div className="space-y-1.5">
               <Label>País</Label>
               <Select
-                value={countryValue}
-                onValueChange={(val) => setValue("country", val ?? "")}
+                value={countryValue || undefined}
+                onValueChange={(val) => setValue("country", val ?? "", { shouldValidate: true })}
               >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Seleccionar país" />

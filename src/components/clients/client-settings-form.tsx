@@ -1,6 +1,6 @@
 "use client";
 
-import { useTransition, useState } from "react";
+import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -15,6 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { toast } from "sonner";
 import { updateClientAction } from "@/app/(dashboard)/clients/actions";
 
 const COUNTRIES = [
@@ -68,8 +69,6 @@ interface ClientSettingsFormProps {
 
 export function ClientSettingsForm({ client }: ClientSettingsFormProps) {
   const [isPending, startTransition] = useTransition();
-  const [successMessage, setSuccessMessage] = useState(false);
-  const [serverError, setServerError] = useState<string | null>(null);
   const router = useRouter();
 
   const {
@@ -91,8 +90,6 @@ export function ClientSettingsForm({ client }: ClientSettingsFormProps) {
   const countryValue = watch("country");
 
   function onSubmit(data: SettingsFormData) {
-    setServerError(null);
-    setSuccessMessage(false);
     startTransition(async () => {
       try {
         await updateClientAction({
@@ -102,14 +99,13 @@ export function ClientSettingsForm({ client }: ClientSettingsFormProps) {
           industry: data.industry || undefined,
           country: data.country || undefined,
         });
-        setSuccessMessage(true);
+        toast.success("Guardado correctamente");
         router.refresh();
-        setTimeout(() => setSuccessMessage(false), 3000);
       } catch (error) {
-        setServerError(
+        toast.error(
           error instanceof Error
             ? error.message
-            : "Error al actualizar el cliente"
+            : "Error al guardar"
         );
       }
     });
@@ -117,17 +113,6 @@ export function ClientSettingsForm({ client }: ClientSettingsFormProps) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      {serverError && (
-        <div className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">
-          {serverError}
-        </div>
-      )}
-      {successMessage && (
-        <div className="rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400">
-          Cambios guardados correctamente.
-        </div>
-      )}
-
       <div className="space-y-1.5">
         <Label htmlFor="settings-name">
           Nombre <span className="text-destructive">*</span>
@@ -171,8 +156,8 @@ export function ClientSettingsForm({ client }: ClientSettingsFormProps) {
         <div className="space-y-1.5">
           <Label>País</Label>
           <Select
-            value={countryValue}
-            onValueChange={(val) => setValue("country", val ?? "")}
+            value={countryValue || undefined}
+            onValueChange={(val) => setValue("country", val ?? "", { shouldValidate: true })}
           >
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Seleccionar país" />

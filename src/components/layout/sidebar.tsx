@@ -15,6 +15,7 @@ import {
   ChevronLeft,
   ChevronDown,
   ChevronRight,
+  LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -23,6 +24,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { signOut } from "next-auth/react";
 
 type NavItem = {
   label: string;
@@ -236,11 +238,36 @@ export function Sidebar() {
         </nav>
 
         {/* Footer */}
-        <div className="border-t border-zinc-800 p-2">
-          {!collapsed && (
-            <p className="px-3 py-1 text-[10px] text-zinc-600">
-              LeadPilot v0.1
-            </p>
+        <div className="border-t border-zinc-800 p-2 space-y-1">
+          {collapsed ? (
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <button
+                    onClick={() => signOut({ callbackUrl: "/login" })}
+                    className="flex w-full items-center justify-center rounded-lg px-3 py-2 text-zinc-400 transition-colors hover:bg-zinc-800/50 hover:text-zinc-200"
+                  >
+                    <LogOut className="size-5 shrink-0" />
+                  </button>
+                }
+              />
+              <TooltipContent side="right" sideOffset={8}>
+                Cerrar sesion
+              </TooltipContent>
+            </Tooltip>
+          ) : (
+            <>
+              <button
+                onClick={() => signOut({ callbackUrl: "/login" })}
+                className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-zinc-400 transition-colors hover:bg-zinc-800/50 hover:text-zinc-200"
+              >
+                <LogOut className="size-4 shrink-0" />
+                <span className="truncate">Cerrar sesion</span>
+              </button>
+              <p className="px-3 py-1 text-[10px] text-zinc-600">
+                LeadPilot v0.1
+              </p>
+            </>
           )}
         </div>
       </aside>

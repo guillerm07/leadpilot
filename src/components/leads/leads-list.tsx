@@ -231,7 +231,11 @@ export function LeadsList({
             onValueChange={(v) => handleStatusFilter(v ?? "__all__")}
           >
             <SelectTrigger className="w-[160px]">
-              <SelectValue placeholder="Estado" />
+              <SelectValue placeholder="Todos los estados">
+                {currentStatus
+                  ? (LEAD_STATUS_LABELS[currentStatus as LeadStatus] ?? currentStatus)
+                  : "Todos"}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="__all__">Todos</SelectItem>
@@ -332,7 +336,17 @@ export function LeadsList({
               </TableHeader>
               <TableBody>
                 {leads.map((lead) => (
-                  <TableRow key={lead.id} data-state={selectedIds.has(lead.id) ? "selected" : undefined}>
+                  <TableRow
+                    key={lead.id}
+                    data-state={selectedIds.has(lead.id) ? "selected" : undefined}
+                    className="cursor-pointer hover:bg-muted/50"
+                    onClick={(e) => {
+                      // Don't navigate if clicking on checkbox, button, or dropdown
+                      const target = e.target as HTMLElement;
+                      if (target.closest("button, [role='checkbox'], [role='menuitem'], a")) return;
+                      router.push(`/leads/${lead.id}`);
+                    }}
+                  >
                     <TableCell>
                       <Checkbox
                         checked={selectedIds.has(lead.id)}

@@ -60,7 +60,9 @@ export function Header({ userEmail }: { userEmail?: string }) {
               )}
             >
               <ChevronsUpDown className="size-3.5 shrink-0 text-zinc-400" />
-              <SelectValue placeholder="Seleccionar cliente" />
+              <SelectValue placeholder="Seleccionar cliente">
+                {activeClient?.name ?? "Seleccionar cliente"}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               {clients.map((client) => (
