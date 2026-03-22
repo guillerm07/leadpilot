@@ -342,7 +342,7 @@ export function FormEditor({
   // ─── Public URL ───────────────────────────────────────────────────────
 
   const publicUrl = slug
-    ? `/qualify/${clientSlug}/${slug}`
+    ? `/forms/${clientSlug}/${slug}`
     : null;
 
   // ─── Preview Mode ─────────────────────────────────────────────────────

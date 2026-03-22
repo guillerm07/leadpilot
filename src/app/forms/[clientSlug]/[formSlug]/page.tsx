@@ -43,7 +43,7 @@ export default function PublicFormPage({
 
       try {
         const res = await fetch(
-          `/api/qualify/${clientSlug}/${formSlug}`
+          `/api/forms/${clientSlug}/${formSlug}`
         );
         if (!res.ok) {
           setNotFound(true);
@@ -188,7 +188,7 @@ function MultiStepForm({ config }: { config: FormConfig }) {
     const { qualified, reason } = evaluateQualification();
 
     try {
-      const res = await fetch("/api/qualify/submit", {
+      const res = await fetch("/api/forms/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
