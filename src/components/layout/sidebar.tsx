@@ -10,6 +10,13 @@ import {
   FileText,
   Inbox,
   MessageSquare,
+  ClipboardList,
+  DollarSign,
+  Megaphone,
+  Video,
+  Globe,
+  ShieldCheck,
+  BarChart3,
   Building2,
   Settings,
   ChevronLeft,
@@ -53,6 +60,16 @@ const outreachGroup: NavGroup = {
     { label: "Mensajes", href: "/outreach/messages", icon: MessageSquare },
   ],
 };
+
+const moduleNavItems: NavItem[] = [
+  { label: "Formularios", href: "/qualify", icon: ClipboardList },
+  { label: "Google Ads", href: "/google-ads", icon: DollarSign },
+  { label: "Meta Ads", href: "/meta-ads", icon: Megaphone },
+  { label: "Video IA", href: "/video-generator", icon: Video },
+  { label: "Landing Pages", href: "/landing-pages", icon: Globe },
+  { label: "Auditorias", href: "/audits", icon: ShieldCheck },
+  { label: "Analytics", href: "/analytics", icon: BarChart3 },
+];
 
 const bottomNavItems: NavItem[] = [
   { label: "Clientes", href: "/clients", icon: Building2 },
@@ -214,22 +231,29 @@ export function Sidebar() {
 
         {/* Navigation */}
         <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-2 py-3">
-          {/* Main items */}
+          {/* Main items: Dashboard + Leads */}
           <div className="space-y-0.5">
             {mainNavItems.map((item) => (
               <NavLink key={item.href} item={item} collapsed={collapsed} />
             ))}
           </div>
 
-          {/* Outreach section */}
+          {/* Outreach expandable section */}
           <div className="mt-1">
             <OutreachSection collapsed={collapsed} />
+          </div>
+
+          {/* Module items: Formularios, Google Ads, Meta Ads, Video IA, Landing Pages, Auditorias, Analytics */}
+          <div className="mt-1 space-y-0.5">
+            {moduleNavItems.map((item) => (
+              <NavLink key={item.href} item={item} collapsed={collapsed} />
+            ))}
           </div>
 
           {/* Separator */}
           <div className="my-3 h-px bg-zinc-800" />
 
-          {/* Bottom items */}
+          {/* Bottom items: Clientes + Configuracion */}
           <div className="space-y-0.5">
             {bottomNavItems.map((item) => (
               <NavLink key={item.href} item={item} collapsed={collapsed} />

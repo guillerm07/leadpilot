@@ -136,7 +136,8 @@ export function LeadsList({
           params.set(key, value);
         }
       }
-      return `/leads?${params.toString()}`;
+      const qs = params.toString();
+      return qs ? `/leads?${qs}` : "/leads";
     },
     [searchParams]
   );
