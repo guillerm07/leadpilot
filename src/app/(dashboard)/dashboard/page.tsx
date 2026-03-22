@@ -1,0 +1,269 @@
+import { cookies } from "next/headers";
+import { eq, and, gte, count, sql, desc } from "drizzle-orm";
+import { db } from "@/lib/db";
+import { leads, outreachMessages, outreachReplies } from "@/lib/db/schema";
+import {
+  getDashboardMetrics,
+  getRecentReplies,
+  getActivityTimeline,
+} from "@/lib/db/queries/metrics";
+import {
+  DashboardContent,
+  type DashboardMetrics,
+  type ActivityDataPoint,
+  type RecentReply,
+  type SuggestedAction,
+} from "@/components/dashboard/dashboard-content";
+
+export default async function DashboardPage() {
+  const cookieStore = await cookies();
+  const activeClientId = cookieStore.get("active_client_id")?.value;
+
+  if (!activeClientId) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-lg font-semibold text-zinc-900">
+            Selecciona un cliente para ver el dashboard
+          </h2>
+          <p className="mt-1 text-sm text-zinc-500">
+            Usa el selector de clientes en la barra lateral para empezar.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Fetch all dashboard data in parallel
+  const [rawMetrics, rawReplies, rawTimeline] = await Promise.all([
+    getDashboardMetrics(activeClientId),
+    getRecentReplies(activeClientId, 5),
+    getActivityTimeline(activeClientId, 30),
+  ]);
+
+  // Unread replies count
+  const [unreadResult] = await db
+    .select({ count: count() })
+    .from(outreachReplies)
+    .innerJoin(leads, eq(outreachReplies.leadId, leads.id))
+    .where(
+      and(
+        eq(leads.clientId, activeClientId),
+        eq(outreachReplies.isRead, false)
+      )
+    );
+
+  // Qualified leads count
+  const [qualifiedResult] = await db
+    .select({ count: count() })
+    .from(leads)
+    .where(
+      and(
+        eq(leads.clientId, activeClientId),
+        eq(leads.status, "qualified")
+      )
+    );
+
+  // Build suggested actions
+  const suggestedActions = await buildSuggestedActions(activeClientId);
+
+  // Assemble metrics
+  const metrics: DashboardMetrics = {
+    leadCount: rawMetrics.leadCount,
+    leadsThisWeek: rawMetrics.leadsThisWeek,
+    messagesSent: rawMetrics.messagesSent,
+    deliveryRate: rawMetrics.deliveryRate,
+    openRate: rawMetrics.openRate,
+    replyRate: rawMetrics.replyRate,
+    repliesCount: rawMetrics.repliesCount,
+    unreadReplies: unreadResult.count,
+    qualifiedLeads: qualifiedResult.count,
+  };
+
+  // Transform activity timeline into chart data
+  const activityData = buildActivityData(rawTimeline);
+
+  // Transform recent replies
+  const recentReplies: RecentReply[] = rawReplies.map((r) => ({
+    id: r.reply.id,
+    leadId: r.lead.id,
+    leadName: r.lead.companyName,
+    preview: r.reply.body.length > 80 ? r.reply.body.slice(0, 80) + "..." : r.reply.body,
+    sentiment: r.reply.sentiment,
+    receivedAt: r.reply.receivedAt.toISOString(),
+    isRead: r.reply.isRead,
+  }));
+
+  return (
+    <div className="space-y-2">
+      <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
+      <DashboardContent
+        metrics={metrics}
+        activityData={activityData}
+        recentReplies={recentReplies}
+        suggestedActions={suggestedActions}
+      />
+    </div>
+  );
+}
+
+// ─── Helpers ────────────────────────────────────────────────────────────────
+
+function buildActivityData(timeline: {
+  leadsCreated: Record<string, unknown>[];
+  messagesSent: Record<string, unknown>[];
+  repliesReceived: Record<string, unknown>[];
+}): ActivityDataPoint[] {
+  // Build a map of all dates in the last 30 days
+  const dateMap = new Map<string, ActivityDataPoint>();
+  const now = new Date();
+
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date(now);
+    d.setDate(d.getDate() - i);
+    const key = d.toISOString().split("T")[0];
+    dateMap.set(key, {
+      date: key,
+      leadsCreated: 0,
+      messagesSent: 0,
+      repliesReceived: 0,
+    });
+  }
+
+  // Fill in actual data
+  for (const row of timeline.leadsCreated) {
+    const dateStr = String(row.date);
+    const entry = dateMap.get(dateStr);
+    if (entry) {
+      entry.leadsCreated = parseInt(String(row.count ?? "0"), 10);
+    }
+  }
+
+  for (const row of timeline.messagesSent) {
+    const dateStr = String(row.date);
+    const entry = dateMap.get(dateStr);
+    if (entry) {
+      entry.messagesSent = parseInt(String(row.count ?? "0"), 10);
+    }
+  }
+
+  for (const row of timeline.repliesReceived) {
+    const dateStr = String(row.date);
+    const entry = dateMap.get(dateStr);
+    if (entry) {
+      entry.repliesReceived = parseInt(String(row.count ?? "0"), 10);
+    }
+  }
+
+  return Array.from(dateMap.values());
+}
+
+async function buildSuggestedActions(
+  clientId: string
+): Promise<SuggestedAction[]> {
+  const actions: SuggestedAction[] = [];
+  const now = new Date();
+  const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+  // Check for unread replies
+  const [unreadRepliesCount] = await db
+    .select({ count: count() })
+    .from(outreachReplies)
+    .innerJoin(leads, eq(outreachReplies.leadId, leads.id))
+    .where(
+      and(
+        eq(leads.clientId, clientId),
+        eq(outreachReplies.isRead, false)
+      )
+    );
+
+  if (unreadRepliesCount.count > 0) {
+    actions.push({
+      id: "unread-replies",
+      label: `${unreadRepliesCount.count} respuestas sin leer`,
+      description: "Revisa las respuestas de tus leads para no perder oportunidades.",
+      href: "/outreach/inbox",
+      priority: "high",
+    });
+  }
+
+  // Check for leads not contacted in 7+ days
+  const [staleLeadsCount] = await db
+    .select({ count: count() })
+    .from(leads)
+    .where(
+      and(
+        eq(leads.clientId, clientId),
+        eq(leads.status, "new"),
+        gte(leads.createdAt, sevenDaysAgo)
+      )
+    );
+
+  // We actually want leads created MORE than 7 days ago that are still "new"
+  const [oldNewLeadsResult] = await db
+    .select({ count: count() })
+    .from(leads)
+    .where(
+      and(
+        eq(leads.clientId, clientId),
+        eq(leads.status, "new"),
+        sql`${leads.createdAt} < ${sevenDaysAgo}`
+      )
+    );
+
+  if (oldNewLeadsResult.count > 0) {
+    actions.push({
+      id: "stale-leads",
+      label: `${oldNewLeadsResult.count} leads sin contactar hace 7+ días`,
+      description: "Estos leads llevan más de una semana sin recibir contacto.",
+      href: "/leads?status=new",
+      priority: "medium",
+    });
+  }
+
+  // Check for leads with status "contacted" that might need a follow-up
+  const [pendingFollowUps] = await db
+    .select({ count: count() })
+    .from(leads)
+    .where(
+      and(
+        eq(leads.clientId, clientId),
+        eq(leads.status, "contacted"),
+        sql`${leads.updatedAt} < ${sevenDaysAgo}`
+      )
+    );
+
+  if (pendingFollowUps.count > 0) {
+    actions.push({
+      id: "follow-ups",
+      label: `${pendingFollowUps.count} follow-ups pendientes`,
+      description: "Leads contactados hace más de 7 días sin respuesta.",
+      href: "/leads?status=contacted",
+      priority: "high",
+    });
+  }
+
+  // Check for leads with unverified emails
+  const [unverifiedEmails] = await db
+    .select({ count: count() })
+    .from(leads)
+    .where(
+      and(
+        eq(leads.clientId, clientId),
+        eq(leads.emailVerified, false),
+        sql`${leads.email} IS NOT NULL`
+      )
+    );
+
+  if (unverifiedEmails.count > 0) {
+    actions.push({
+      id: "unverified-emails",
+      label: `${unverifiedEmails.count} emails sin verificar`,
+      description: "Verifica los emails antes de enviar mensajes para evitar rebotes.",
+      href: "/leads?emailVerified=false",
+      priority: "low",
+    });
+  }
+
+  return actions;
+}
