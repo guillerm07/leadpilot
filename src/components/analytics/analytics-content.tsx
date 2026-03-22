@@ -24,6 +24,16 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import {
+  Lightbulb,
+  Mail,
+  Eye,
+  FileText,
+  Users,
+  TrendingUp,
+} from "lucide-react";
 import type {
   OutreachFunnelData,
   ChannelBreakdownRow,
@@ -37,6 +47,7 @@ import type {
   QualificationTrend,
   TrafficSource,
 } from "@/lib/db/queries/analytics";
+import { VerticalFunnel } from "@/components/analytics/vertical-funnel";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -55,6 +66,7 @@ export interface AnalyticsContentProps {
   qualificationTrend: QualificationTrend[];
   hasGoogleAds: boolean;
   hasLandingPages: boolean;
+  staleLeadsCount: number;
 }
 
 // ─── Constants ──────────────────────────────────────────────────────────────
@@ -92,9 +104,18 @@ export function AnalyticsContent({
   qualificationTrend,
   hasGoogleAds,
   hasLandingPages,
+  staleLeadsCount,
 }: AnalyticsContentProps) {
   return (
     <div className="space-y-8">
+      {/* AI Smart Tips */}
+      <SmartTipsSection
+        outreachFunnel={outreachFunnel}
+        bestTemplates={bestTemplates}
+        staleLeadsCount={staleLeadsCount}
+        channelBreakdown={channelBreakdown}
+      />
+
       {/* Outreach Section */}
       <OutreachSection
         funnel={outreachFunnel}
@@ -130,6 +151,136 @@ export function AnalyticsContent({
   );
 }
 
+// ─── AI Smart Tips Section ──────────────────────────────────────────────────
+
+interface SmartTip {
+  icon: React.ElementType;
+  text: string;
+  actionLabel: string;
+  actionHref: string;
+}
+
+function SmartTipsSection({
+  outreachFunnel,
+  bestTemplates,
+  staleLeadsCount,
+  channelBreakdown,
+}: {
+  outreachFunnel: OutreachFunnelData;
+  bestTemplates: TemplatePerformance[];
+  staleLeadsCount: number;
+  channelBreakdown: ChannelBreakdownRow[];
+}) {
+  const tips: SmartTip[] = [];
+
+  // Tip: Low reply rate
+  if (outreachFunnel.contacted > 0) {
+    const replyRate = outreachFunnel.replied / outreachFunnel.contacted;
+    if (replyRate < 0.05) {
+      tips.push({
+        icon: Mail,
+        text: `Tu tasa de respuesta es ${(replyRate * 100).toFixed(1)}%. Prueba subjects con preguntas o personalizacion.`,
+        actionLabel: "Editar plantillas",
+        actionHref: "/outreach/templates",
+      });
+    }
+  }
+
+  // Tip: Low open rate
+  if (outreachFunnel.delivered > 0) {
+    const openRate = outreachFunnel.opened / outreachFunnel.delivered;
+    if (openRate < 0.2) {
+      tips.push({
+        icon: Eye,
+        text: `Tasa de apertura baja (${(openRate * 100).toFixed(1)}%). Revisa tus subjects y horarios de envio.`,
+        actionLabel: "Ver horarios",
+        actionHref: "/analytics",
+      });
+    }
+  }
+
+  // Tip: Best template
+  if (bestTemplates.length > 0) {
+    const best = bestTemplates[0];
+    if (best.replyRate > 0) {
+      tips.push({
+        icon: FileText,
+        text: `La plantilla "${best.templateName}" tiene ${(best.replyRate * 100).toFixed(1)}% de respuestas. Considera crear variantes similares.`,
+        actionLabel: "Editar plantilla",
+        actionHref: "/outreach/templates",
+      });
+    }
+  }
+
+  // Tip: Stale leads
+  if (staleLeadsCount > 10) {
+    tips.push({
+      icon: Users,
+      text: `${staleLeadsCount} leads sin contactar en >7 dias. Considera reactivarlos.`,
+      actionLabel: "Ver leads",
+      actionHref: "/leads",
+    });
+  }
+
+  // Tip: High-performing sequence (use channel breakdown as proxy)
+  const emailChannel = channelBreakdown.find((c) => c.channel === "email");
+  if (emailChannel && emailChannel.sent > 0) {
+    const channelOpenRate = emailChannel.opened / emailChannel.sent;
+    if (channelOpenRate > 0.3) {
+      tips.push({
+        icon: TrendingUp,
+        text: `El canal email tiene ${(channelOpenRate * 100).toFixed(1)}% de apertura. Escala anadiendo mas leads a tus secuencias.`,
+        actionLabel: "Ver secuencias",
+        actionHref: "/outreach/sequences",
+      });
+    }
+  }
+
+  if (tips.length === 0) return null;
+
+  return (
+    <section>
+      <Card className="relative overflow-hidden border-2 border-transparent bg-gradient-to-r from-indigo-50 via-white to-purple-50 dark:from-indigo-950/30 dark:via-background dark:to-purple-950/30">
+        {/* Gradient border effect */}
+        <div className="absolute inset-0 -z-10 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-500 p-[2px]">
+          <div className="h-full w-full rounded-lg bg-background" />
+        </div>
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2 text-base">
+            <Lightbulb className="size-5 text-amber-500" />
+            Recomendaciones IA
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            {tips.slice(0, 5).map((tip, idx) => {
+              const Icon = tip.icon;
+              return (
+                <div
+                  key={idx}
+                  className="flex items-start gap-3 rounded-lg bg-background/60 p-3"
+                >
+                  <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-indigo-100 dark:bg-indigo-900/40">
+                    <Icon className="size-4 text-indigo-600 dark:text-indigo-400" />
+                  </div>
+                  <div className="flex flex-1 items-center justify-between gap-4">
+                    <p className="text-sm text-foreground">{tip.text}</p>
+                    <Link href={tip.actionHref} className="shrink-0">
+                      <Button variant="outline" size="sm">
+                        {tip.actionLabel}
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
+    </section>
+  );
+}
+
 // ─── Outreach Section ───────────────────────────────────────────────────────
 
 function OutreachSection({
@@ -156,38 +307,18 @@ function OutreachSection({
     <section>
       <h2 className="mb-4 text-lg font-semibold">Outreach</h2>
       <div className="grid gap-4 lg:grid-cols-2">
-        {/* Funnel chart (approximated with horizontal BarChart) */}
+        {/* Vertical funnel */}
         <Card>
           <CardHeader>
             <CardTitle>Embudo de conversión</CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={funnelData} layout="vertical">
-                <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                <XAxis type="number" />
-                <YAxis
-                  type="category"
-                  dataKey="name"
-                  width={100}
-                  tick={{ fontSize: 12 }}
-                />
-                <Tooltip
-                  formatter={(value: number) => [
-                    value.toLocaleString("es-ES"),
-                    "Total",
-                  ]}
-                />
-                <Bar dataKey="value" radius={[0, 4, 4, 0]}>
-                  {funnelData.map((_, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={FUNNEL_COLORS[index % FUNNEL_COLORS.length]}
-                    />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+            <VerticalFunnel
+              stages={funnelData.map((d) => ({
+                label: d.name,
+                value: d.value,
+              }))}
+            />
           </CardContent>
         </Card>
 

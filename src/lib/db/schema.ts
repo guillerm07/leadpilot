@@ -102,6 +102,7 @@ export const clientsRelations = relations(clients, ({ one, many }) => ({
   landingPages: many(landingPages),
   adAccounts: many(adAccounts),
   metaAdAccounts: many(metaAdAccounts),
+  workflowTriggers: many(workflowTriggers),
 }));
 
 // ─── Leads ───────────────────────────────────────────────────────────────────
@@ -1153,3 +1154,28 @@ export const leadScoresRelations = relations(leadScores, ({ one }) => ({
     references: [leads.id],
   }),
 }));
+
+// ─── Workflow Triggers ─────────────────────────────────────────────────────
+
+export const workflowTriggers = pgTable("workflow_triggers", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  clientId: uuid("client_id").references(() => clients.id).notNull(),
+  name: text("name").notNull(),
+  isActive: boolean("is_active").default(true).notNull(),
+  triggerType: text("trigger_type").notNull(), // lead_created, email_replied, form_submitted, status_changed, score_threshold
+  triggerConfig: jsonb("trigger_config"), // {fromStatus, toStatus} or {minScore} etc
+  actionType: text("action_type").notNull(), // add_to_sequence, change_status, send_notification, tag_lead
+  actionConfig: jsonb("action_config"), // {sequenceId} or {newStatus} or {message} etc
+  executionCount: integer("execution_count").default(0),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+export const workflowTriggersRelations = relations(
+  workflowTriggers,
+  ({ one }) => ({
+    client: one(clients, {
+      fields: [workflowTriggers.clientId],
+      references: [clients.id],
+    }),
+  })
+);

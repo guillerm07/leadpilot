@@ -6,15 +6,21 @@ import {
 } from "@/lib/db/schema";
 import { eq, and, gte, sql, desc, count } from "drizzle-orm";
 
-export async function getDashboardMetrics(clientId: string) {
+export async function getDashboardMetrics(clientId: string, days: number = 30) {
   const now = new Date();
   const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+  const periodStart = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
 
-  // Lead counts
+  // Lead counts (total + this week)
   const [leadCountResult] = await db
     .select({ count: count() })
     .from(leads)
-    .where(eq(leads.clientId, clientId));
+    .where(
+      and(
+        eq(leads.clientId, clientId),
+        gte(leads.createdAt, periodStart)
+      )
+    );
 
   const [leadsThisWeekResult] = await db
     .select({ count: count() })
@@ -50,6 +56,7 @@ export async function getDashboardMetrics(clientId: string) {
       FROM ${outreachMessages}
       INNER JOIN ${leads} ON ${outreachMessages.leadId} = ${leads.id}
       WHERE ${leads.clientId} = ${clientId}
+        AND ${outreachMessages.sentAt} >= ${periodStart}
     `);
 
     const stats = (messageStats[0] ?? {}) as Record<string, string | null>;
@@ -68,7 +75,12 @@ export async function getDashboardMetrics(clientId: string) {
       .select({ count: count() })
       .from(outreachReplies)
       .innerJoin(leads, eq(outreachReplies.leadId, leads.id))
-      .where(eq(leads.clientId, clientId));
+      .where(
+        and(
+          eq(leads.clientId, clientId),
+          gte(outreachReplies.receivedAt, periodStart)
+        )
+      );
     repliesCount = repliesResult?.count ?? 0;
   } catch (error) {
     console.error("Error fetching replies count:", error);

@@ -1,6 +1,9 @@
+"use client";
+
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowUpRight, ArrowDownRight, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ResponsiveContainer, LineChart, Line } from "recharts";
 
 export function KpiCard({
   title,
@@ -8,6 +11,7 @@ export function KpiCard({
   subtitle,
   icon: Icon,
   trend,
+  sparkData,
   iconBgClass = "bg-blue-100",
   iconClass = "text-blue-600",
 }: {
@@ -16,6 +20,7 @@ export function KpiCard({
   subtitle?: string;
   icon: LucideIcon;
   trend?: { value: number; positive: boolean };
+  sparkData?: number[];
   iconBgClass?: string;
   iconClass?: string;
 }) {
@@ -49,6 +54,21 @@ export function KpiCard({
             <Icon className={cn("h-6 w-6", iconClass)} />
           </div>
         </div>
+        {sparkData && sparkData.length > 0 && (
+          <div className="mt-3 text-muted-foreground">
+            <ResponsiveContainer width="100%" height={30}>
+              <LineChart data={sparkData.map((v, i) => ({ i, v }))}>
+                <Line
+                  type="monotone"
+                  dataKey="v"
+                  stroke="currentColor"
+                  strokeWidth={1.5}
+                  dot={false}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        )}
       </CardContent>
       {/* Decorative gradient bar at bottom */}
       <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-primary/60 to-primary/20" />

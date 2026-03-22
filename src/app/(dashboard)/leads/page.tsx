@@ -81,7 +81,7 @@ export default async function LeadsPage({
       </div>
 
       {view === "kanban" ? (
-        <LeadsKanban leads={leads} />
+        <LeadsKanban leads={leads} scores={scores} />
       ) : (
         <LeadsList
           leads={leads}

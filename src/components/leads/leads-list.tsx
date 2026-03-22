@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
 import {
   Table,
   TableBody,
@@ -49,6 +48,7 @@ import { formatDate } from "@/lib/utils";
 import { ScrapingDialog } from "@/components/leads/scraping-dialog";
 import { ImportCsvDialog } from "@/components/leads/import-csv-dialog";
 import { CreateLeadDialog } from "@/components/leads/create-lead-dialog";
+import { LeadSlideOver } from "@/components/leads/lead-slide-over";
 import { updateLeadStatusAction, deleteLeadAction } from "@/app/(dashboard)/leads/actions";
 
 // ─── Source labels ───────────────────────────────────────────────────────────
@@ -131,6 +131,8 @@ export function LeadsList({
   const [scrapingOpen, setScrapingOpen] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
+  const [selectedLeadId, setSelectedLeadId] = useState<string | null>(null);
+  const [slideOverOpen, setSlideOverOpen] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
@@ -353,10 +355,11 @@ export function LeadsList({
                     data-state={selectedIds.has(lead.id) ? "selected" : undefined}
                     className="cursor-pointer hover:bg-muted/50"
                     onClick={(e) => {
-                      // Don't navigate if clicking on checkbox, button, or dropdown
+                      // Don't open panel if clicking on checkbox, button, or dropdown
                       const target = e.target as HTMLElement;
                       if (target.closest("button, [role='checkbox'], [role='menuitem'], a")) return;
-                      router.push(`/leads/${lead.id}`);
+                      setSelectedLeadId(lead.id);
+                      setSlideOverOpen(true);
                     }}
                   >
                     <TableCell>
@@ -366,12 +369,17 @@ export function LeadsList({
                       />
                     </TableCell>
                     <TableCell>
-                      <Link
-                        href={`/leads/${lead.id}`}
-                        className="font-medium text-zinc-900 hover:underline"
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedLeadId(lead.id);
+                          setSlideOverOpen(true);
+                        }}
+                        className="font-medium text-zinc-900 hover:underline text-left"
                       >
                         {lead.companyName}
-                      </Link>
+                      </button>
                     </TableCell>
                     <TableCell className="text-zinc-500">
                       {lead.category ?? "-"}
@@ -412,7 +420,10 @@ export function LeadsList({
                         />
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem
-                            onClick={() => router.push(`/leads/${lead.id}`)}
+                            onClick={() => {
+                              setSelectedLeadId(lead.id);
+                              setSlideOverOpen(true);
+                            }}
                           >
                             Ver detalle
                           </DropdownMenuItem>
@@ -496,6 +507,11 @@ export function LeadsList({
         open={createOpen}
         onOpenChange={setCreateOpen}
         clientId={clientId}
+      />
+      <LeadSlideOver
+        leadId={selectedLeadId}
+        open={slideOverOpen}
+        onOpenChange={setSlideOverOpen}
       />
     </div>
   );

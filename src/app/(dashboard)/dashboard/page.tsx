@@ -16,7 +16,31 @@ import {
   type SuggestedAction,
 } from "@/components/dashboard/dashboard-content";
 
-export default async function DashboardPage() {
+type Period = "7d" | "30d" | "90d";
+
+function getPeriodDays(period: Period): number {
+  switch (period) {
+    case "7d":
+      return 7;
+    case "90d":
+      return 90;
+    case "30d":
+    default:
+      return 30;
+  }
+}
+
+interface DashboardPageProps {
+  searchParams: Promise<{ period?: string }>;
+}
+
+export default async function DashboardPage({ searchParams }: DashboardPageProps) {
+  const params = await searchParams;
+  const period = (["7d", "30d", "90d"].includes(params.period ?? "")
+    ? params.period
+    : "30d") as Period;
+  const days = getPeriodDays(period);
+
   const cookieStore = await cookies();
   let activeClientId = cookieStore.get("active_client_id")?.value;
 
@@ -74,9 +98,9 @@ export default async function DashboardPage() {
 
   try {
     const [m, r, t] = await Promise.all([
-      getDashboardMetrics(activeClientId),
+      getDashboardMetrics(activeClientId, days),
       getRecentReplies(activeClientId, 5),
-      getActivityTimeline(activeClientId, 30),
+      getActivityTimeline(activeClientId, days),
     ]);
     rawMetrics = m;
     rawReplies = r;
@@ -142,7 +166,7 @@ export default async function DashboardPage() {
   };
 
   // Transform activity timeline into chart data
-  const activityData = buildActivityData(rawTimeline);
+  const activityData = buildActivityData(rawTimeline, days);
 
   // Transform recent replies
   const recentReplies: RecentReply[] = rawReplies.map((r) => ({
@@ -161,6 +185,7 @@ export default async function DashboardPage() {
       activityData={activityData}
       recentReplies={recentReplies}
       suggestedActions={suggestedActions}
+      period={period}
     />
   );
 }
@@ -171,12 +196,12 @@ function buildActivityData(timeline: {
   leadsCreated: Record<string, unknown>[];
   messagesSent: Record<string, unknown>[];
   repliesReceived: Record<string, unknown>[];
-}): ActivityDataPoint[] {
-  // Build a map of all dates in the last 30 days
+}, days: number = 30): ActivityDataPoint[] {
+  // Build a map of all dates in the selected period
   const dateMap = new Map<string, ActivityDataPoint>();
   const now = new Date();
 
-  for (let i = 29; i >= 0; i--) {
+  for (let i = days - 1; i >= 0; i--) {
     const d = new Date(now);
     d.setDate(d.getDate() - i);
     const key = d.toISOString().split("T")[0];

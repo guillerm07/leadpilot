@@ -42,7 +42,7 @@ export default async function DashboardLayout({
     <SessionProvider>
       <ClientProvider initialClients={clientList} initialClientId={activeClientId}>
         <div className="flex h-screen">
-          <Sidebar />
+          <Sidebar userEmail={user.email ?? undefined} />
           <div className="flex flex-1 flex-col overflow-hidden">
             <Header userEmail={user.email ?? undefined} />
             <main className="flex-1 overflow-y-auto bg-gradient-subtle p-6">

@@ -15,13 +15,13 @@ import {
 } from "lucide-react";
 import {
   ResponsiveContainer,
-  LineChart,
-  Line,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   Legend,
+  Area,
+  AreaChart,
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -35,6 +35,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { KpiCard } from "@/components/dashboard/kpi-card";
+import { PeriodSelector } from "@/components/analytics/period-selector";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -80,6 +81,7 @@ interface DashboardContentProps {
   activityData: ActivityDataPoint[];
   recentReplies: RecentReply[];
   suggestedActions: SuggestedAction[];
+  period: string;
 }
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
@@ -136,20 +138,35 @@ function priorityColor(priority: "high" | "medium" | "low"): string {
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
+const PERIOD_LABELS: Record<string, string> = {
+  "7d": "7 dias",
+  "30d": "30 dias",
+  "90d": "90 dias",
+};
+
+// Mock spark data — trending upward for visual placeholder
+const MOCK_SPARK_UP = [3, 5, 4, 7, 6, 9, 11];
+const MOCK_SPARK_RATE = [12, 14, 13, 16, 15, 18, 20];
+const MOCK_SPARK_FLAT = [5, 6, 5, 7, 6, 6, 7];
+
 export function DashboardContent({
   metrics,
   activityData,
   recentReplies,
   suggestedActions,
+  period,
 }: DashboardContentProps) {
   return (
     <div className="space-y-8">
       {/* Welcome Header */}
-      <div className="space-y-1">
-        <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
-        <p className="text-muted-foreground">
-          Resumen de actividad del cliente
-        </p>
+      <div className="flex items-center justify-between">
+        <div className="space-y-1">
+          <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
+          <p className="text-muted-foreground">
+            Resumen de actividad del cliente
+          </p>
+        </div>
+        <PeriodSelector currentPeriod={period} />
       </div>
 
       {/* KPI Cards */}
@@ -161,6 +178,7 @@ export function DashboardContent({
           icon={Users}
           iconBgClass="bg-blue-100"
           iconClass="text-blue-600"
+          sparkData={MOCK_SPARK_UP}
         />
         <KpiCard
           title="Mensajes enviados"
@@ -169,6 +187,7 @@ export function DashboardContent({
           icon={Send}
           iconBgClass="bg-emerald-100"
           iconClass="text-emerald-600"
+          sparkData={MOCK_SPARK_UP}
         />
         <KpiCard
           title="Tasa de apertura"
@@ -176,6 +195,7 @@ export function DashboardContent({
           icon={Eye}
           iconBgClass="bg-purple-100"
           iconClass="text-purple-600"
+          sparkData={MOCK_SPARK_RATE}
         />
         <KpiCard
           title="Tasa de respuesta"
@@ -183,6 +203,7 @@ export function DashboardContent({
           icon={MessageSquare}
           iconBgClass="bg-orange-100"
           iconClass="text-orange-600"
+          sparkData={MOCK_SPARK_RATE}
         />
         <KpiCard
           title="Respuestas"
@@ -191,6 +212,7 @@ export function DashboardContent({
           icon={Inbox}
           iconBgClass="bg-cyan-100"
           iconClass="text-cyan-600"
+          sparkData={MOCK_SPARK_FLAT}
         />
         <KpiCard
           title="Leads cualificados"
@@ -198,6 +220,7 @@ export function DashboardContent({
           icon={Target}
           iconBgClass="bg-pink-100"
           iconClass="text-pink-600"
+          sparkData={MOCK_SPARK_UP}
         />
       </div>
 
@@ -210,16 +233,30 @@ export function DashboardContent({
         <Card>
           <CardHeader>
             <CardTitle className="text-base font-medium text-muted-foreground">
-              Últimos 30 días
+              {PERIOD_LABELS[period] ? `Últimos ${PERIOD_LABELS[period]}` : "Últimos 30 dias"}
             </CardTitle>
           </CardHeader>
           <CardContent>
             {activityData.length > 0 ? (
               <ResponsiveContainer width="100%" height={320}>
-                <LineChart
+                <AreaChart
                   data={activityData}
                   margin={{ top: 5, right: 20, left: 0, bottom: 5 }}
                 >
+                  <defs>
+                    <linearGradient id="gradLeads" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                    </linearGradient>
+                    <linearGradient id="gradMessages" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#14b8a6" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#14b8a6" stopOpacity={0} />
+                    </linearGradient>
+                    <linearGradient id="gradReplies" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#f97316" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#f97316" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
                   <CartesianGrid
                     strokeDasharray="3 3"
                     className="stroke-muted/50"
@@ -249,40 +286,47 @@ export function DashboardContent({
                       boxShadow:
                         "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
                     }}
+                    formatter={(value: number, name: string) => [value, name]}
                   />
                   <Legend
                     verticalAlign="top"
                     height={36}
-                    wrapperStyle={{ fontSize: "13px" }}
+                    wrapperStyle={{ fontSize: "13px", cursor: "pointer" }}
+                    onClick={(e) => {
+                      // Legend click is handled natively by recharts when using Area with hide
+                    }}
                   />
-                  <Line
+                  <Area
                     type="monotone"
                     dataKey="leadsCreated"
                     name="Leads captados"
                     stroke="#3b82f6"
                     strokeWidth={2}
+                    fill="url(#gradLeads)"
                     dot={false}
                     activeDot={{ r: 5, strokeWidth: 2, fill: "#fff" }}
                   />
-                  <Line
+                  <Area
                     type="monotone"
                     dataKey="messagesSent"
                     name="Mensajes enviados"
                     stroke="#14b8a6"
                     strokeWidth={2}
+                    fill="url(#gradMessages)"
                     dot={false}
                     activeDot={{ r: 5, strokeWidth: 2, fill: "#fff" }}
                   />
-                  <Line
+                  <Area
                     type="monotone"
                     dataKey="repliesReceived"
                     name="Respuestas recibidas"
                     stroke="#f97316"
                     strokeWidth={2}
+                    fill="url(#gradReplies)"
                     dot={false}
                     activeDot={{ r: 5, strokeWidth: 2, fill: "#fff" }}
                   />
-                </LineChart>
+                </AreaChart>
               </ResponsiveContainer>
             ) : (
               <div className="flex h-64 items-center justify-center text-muted-foreground">

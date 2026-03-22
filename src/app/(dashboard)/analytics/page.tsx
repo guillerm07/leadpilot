@@ -17,8 +17,8 @@ import {
   type DateRange,
 } from "@/lib/db/queries/analytics";
 import { db } from "@/lib/db";
-import { clients, workspaces } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { clients, workspaces, leads } from "@/lib/db/schema";
+import { eq, and, lte, count } from "drizzle-orm";
 import { requireAuth } from "@/lib/auth/helpers";
 import {
   AnalyticsContent,
@@ -122,6 +122,8 @@ export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps
   }
 
   // Fetch all data in parallel
+  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+
   const [
     outreachFunnel,
     channelBreakdown,
@@ -135,6 +137,7 @@ export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps
     topTrafficSources,
     qualificationFunnel,
     qualificationTrend,
+    staleLeadsResult,
   ] = await Promise.all([
     getOutreachFunnel(activeClientId, dateRange),
     getChannelBreakdown(activeClientId, dateRange),
@@ -154,6 +157,17 @@ export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps
     getTopTrafficSources(activeClientId),
     getQualificationFunnel(activeClientId, dateRange),
     getQualificationTrend(activeClientId, dateRange),
+    db
+      .select({ count: count() })
+      .from(leads)
+      .where(
+        and(
+          eq(leads.clientId, activeClientId),
+          eq(leads.status, "new"),
+          lte(leads.createdAt, sevenDaysAgo)
+        )
+      )
+      .then(([r]) => r?.count ?? 0),
   ]);
 
   const hasLandingPages = landingPageStats.length > 0;
@@ -173,6 +187,7 @@ export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps
     qualificationTrend,
     hasGoogleAds,
     hasLandingPages,
+    staleLeadsCount: staleLeadsResult,
   };
 
   return (
